@@ -419,4 +419,4 @@ class VerticalSplitter {
 }
 
 // 导出垂直分割线类
-window.VerticalSplitter = VerticalSplitter;"file_path":"D:\Code代码\ScoreBoard-for-Class\vertical-splitter.js
+window.VerticalSplitter = VerticalSplitter;

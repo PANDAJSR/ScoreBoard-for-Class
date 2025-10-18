@@ -394,4 +394,4 @@ class ScoreBoardApp {
 // 初始化应用
 window.addEventListener('DOMContentLoaded', () => {
     window.app = new ScoreBoardApp();
-});"file_path":"D:\Code代码\ScoreBoard-for-Class\app.js
+});

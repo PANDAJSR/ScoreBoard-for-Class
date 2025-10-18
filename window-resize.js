@@ -268,4 +268,4 @@ class WindowResize {
 }
 
 // 导出窗口调整大小类
-window.WindowResize = WindowResize;"file_path":"D:\Code代码\ScoreBoard-for-Class\window-resize.js
+window.WindowResize = WindowResize;
