@@ -252,6 +252,8 @@
         // 窗口调整大小功能
         document.addEventListener('DOMContentLoaded', function() {
             const resizeHandles = document.querySelectorAll('.resize-handle');
+            const minWidth = 300;  // 最小宽度
+            const minHeight = 400; // 最小高度
 
             resizeHandles.forEach(handle => {
                 handle.addEventListener('mousedown', function(e) {
@@ -267,13 +269,17 @@
 
                         if (handle.classList.contains('resize-handle-bottom')) {
                             // 垂直调整
-                            window.resizeTo(startWidth, startHeight + deltaY);
+                            const newHeight = Math.max(minHeight, startHeight + deltaY);
+                            window.resizeTo(startWidth, newHeight);
                         } else if (handle.classList.contains('resize-handle-right')) {
                             // 水平调整
-                            window.resizeTo(startWidth + deltaX, startHeight);
+                            const newWidth = Math.max(minWidth, startWidth + deltaX);
+                            window.resizeTo(newWidth, startHeight);
                         } else if (handle.classList.contains('resize-handle-bottom-right')) {
                             // 同时调整
-                            window.resizeTo(startWidth + deltaX, startHeight + deltaY);
+                            const newWidth = Math.max(minWidth, startWidth + deltaX);
+                            const newHeight = Math.max(minHeight, startHeight + deltaY);
+                            window.resizeTo(newWidth, newHeight);
                         }
                     }
 

@@ -51,6 +51,8 @@ function createWindow() {
     resizable: true,        // ✅ 启用窗口大小调整
     maximizable: true,      // ✅ 启用最大化
     minimizable: true,      // ✅ 启用最小化
+    minWidth: 300,          // ✅ 设置最小宽度
+    minHeight: 400,         // ✅ 设置最小高度
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: true,
@@ -64,6 +66,14 @@ function createWindow() {
   mainWindow.on('resize', () => {
     const [width, height] = mainWindow.getSize();
     console.log(`窗口大小改变: ${width}x${height}`);
+
+    // 确保窗口不会小于最小尺寸
+    if (width < 300 || height < 400) {
+      const newWidth = Math.max(300, width);
+      const newHeight = Math.max(400, height);
+      mainWindow.setSize(newWidth, newHeight);
+    }
+
     // 可以在这里添加保存窗口大小的逻辑
   });
 
