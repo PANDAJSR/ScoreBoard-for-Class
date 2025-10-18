@@ -48,8 +48,9 @@ function createWindow() {
     height: 800,
     frame: isMac ? true : false,
     titleBarStyle: isMac ? 'hiddenInset' : 'hidden',
-    resizable: false,
-    maximizable: false,
+    resizable: true,        // ✅ 启用窗口大小调整
+    maximizable: true,      // ✅ 启用最大化
+    minimizable: true,      // ✅ 启用最小化
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: true,
@@ -58,6 +59,13 @@ function createWindow() {
   });
 
   mainWindow.loadFile('index.html');
+
+  // 监听窗口大小变化事件
+  mainWindow.on('resize', () => {
+    const [width, height] = mainWindow.getSize();
+    console.log(`窗口大小改变: ${width}x${height}`);
+    // 可以在这里添加保存窗口大小的逻辑
+  });
 
   mainWindow.webContents.openDevTools();
 
