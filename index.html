@@ -166,10 +166,65 @@
             left: 50%;
             top: 60px; /* 从标题栏下方开始 */
             bottom: 0;
-            width: 2px;
+            width: 4px; /* 增加宽度便于拖拽 */
             background-color: #999ea3;
             transform: translateX(-50%);
             z-index: 1;
+            cursor: ew-resize; /* 水平调整鼠标指针 */
+            transition: background-color 0.2s ease;
+        }
+
+        /* 垂直分割线悬停效果 */
+        .vertical-line:hover {
+            background-color: #b8bfc4;
+            width: 6px; /* 悬停时更宽 */
+        }
+
+        /* 垂直分割线拖拽状态 */
+        .vertical-line.dragging {
+            background-color: #4a9eff;
+            width: 6px;
+        }
+
+        /* 主内容区域 */
+        .main-content {
+            display: flex;
+            height: calc(100vh - 60px); /* 减去标题栏高度 */
+            position: relative;
+        }
+
+        /* 左侧面板 */
+        .left-panel {
+            width: calc(50% - 2px); /* 减去分割线宽度的一半 */
+            height: 100%;
+            background-color: #1d2129;
+            position: relative;
+            overflow: auto;
+        }
+
+        /* 右侧面板 */
+        .right-panel {
+            width: calc(50% - 2px); /* 减去分割线宽度的一半 */
+            height: 100%;
+            background-color: #1d2129;
+            position: relative;
+            overflow: auto;
+        }
+
+        /* 面板内容 */
+        .panel-content {
+            padding: 20px;
+            color: #ffffff;
+        }
+
+        .panel-content h3 {
+            margin-bottom: 10px;
+            color: #4a9eff;
+        }
+
+        .panel-content p {
+            line-height: 1.6;
+            color: #b8bfc4;
         }
 
         /* 窗口调整大小手柄 */
@@ -237,8 +292,27 @@
         </div>
     </div>
 
-    <!-- 垂直分割线 -->
-    <div class="vertical-line"></div>
+    <!-- 主内容区域 -->
+    <div class="main-content">
+        <!-- 左侧区域 -->
+        <div class="left-panel" id="leftPanel">
+            <div class="panel-content">
+                <h3>左侧内容</h3>
+                <p>左侧区域内容</p>
+            </div>
+        </div>
+
+        <!-- 垂直分割线 -->
+        <div class="vertical-line" id="verticalLine"></div>
+
+        <!-- 右侧区域 -->
+        <div class="right-panel" id="rightPanel">
+            <div class="panel-content">
+                <h3>右侧内容</h3>
+                <p>右侧区域内容</p>
+            </div>
+        </div>
+    </div>
 
     <!-- 窗口调整大小手柄 -->
     <div class="resize-handle resize-handle-bottom"></div>
@@ -291,6 +365,55 @@
                     document.addEventListener('mousemove', handleMouseMove);
                     document.addEventListener('mouseup', handleMouseUp);
                 });
+            });
+
+            // 垂直分割线拖拽功能
+            const verticalLine = document.querySelector('.vertical-line');
+            const leftPanel = document.querySelector('.left-panel');
+            const rightPanel = document.querySelector('.right-panel');
+            const minSideWidth = 150; // 左右最小宽度
+            let isDraggingLine = false;
+            let startX = 0;
+            let startLeft = 0;
+
+            verticalLine.addEventListener('mousedown', function(e) {
+                e.preventDefault();
+                isDraggingLine = true;
+                startX = e.clientX;
+                startLeft = parseInt(window.getComputedStyle(verticalLine).left);
+                verticalLine.classList.add('dragging');
+                document.body.style.cursor = 'ew-resize';
+            });
+
+            document.addEventListener('mousemove', function(e) {
+                if (!isDraggingLine) return;
+
+                const deltaX = e.clientX - startX;
+                const windowWidth = window.innerWidth;
+                const newLeft = startLeft + deltaX;
+
+                // 计算左右两侧宽度
+                const leftWidth = newLeft;
+                const rightWidth = windowWidth - newLeft;
+
+                // 确保左右两侧都不小于最小宽度
+                if (leftWidth >= minSideWidth && rightWidth >= minSideWidth) {
+                    // 更新分割线位置
+                    verticalLine.style.left = newLeft + 'px';
+                    verticalLine.style.transform = 'none'; // 移除transform以便精确定位
+
+                    // 更新左右面板宽度
+                    leftPanel.style.width = (newLeft - 2) + 'px'; // 减去分割线宽度
+                    rightPanel.style.width = (windowWidth - newLeft - 2) + 'px'; // 减去分割线宽度
+                }
+            });
+
+            document.addEventListener('mouseup', function() {
+                if (isDraggingLine) {
+                    isDraggingLine = false;
+                    verticalLine.classList.remove('dragging');
+                    document.body.style.cursor = '';
+                }
             });
         });
 
