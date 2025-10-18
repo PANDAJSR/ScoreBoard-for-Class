@@ -1,0 +1,24 @@
+{
+  "name": "scoreboard-for-class",
+  "version": "1.0.0",
+  "description": "适用于班级大屏的个人和小组积分管理软件",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/PANDAJSR/ScoreBoard-for-Class.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/PANDAJSR/ScoreBoard-for-Class/issues"
+  },
+  "homepage": "https://github.com/PANDAJSR/ScoreBoard-for-Class#readme",
+  "devDependencies": {
+    "electron": "^38.3.0"
+  }
+}
