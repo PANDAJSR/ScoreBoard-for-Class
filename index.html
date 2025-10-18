@@ -231,6 +231,169 @@
             color: #b8bfc4;
         }
 
+        /* 左侧导航栏（固定60px宽） */
+        .left-nav {
+            width: 60px;
+            height: calc(100% - 60px); /* 减去标题栏高度 */
+            background-color: #2a2d35;
+            position: absolute;
+            top: 60px; /* 从标题栏下方开始 */
+            left: 0;
+            border-right: 1px solid #3a3d45;
+            overflow-y: auto;
+            overflow-x: hidden;
+        }
+
+        /* 导航内容 */
+        .nav-content {
+            padding: 10px 5px;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* 导航标题 */
+        .nav-content h4 {
+            color: #b8bfc4;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            text-align: center;
+            padding: 8px 0;
+            border-bottom: 1px solid #3a3d45;
+            width: 100%;
+        }
+
+        /* 导航按钮容器 */
+        .nav-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            width: 100%;
+            align-items: center;
+        }
+
+        /* 导航按钮（圆形风格） */
+        .nav-button {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: none;
+            background-color: rgba(255, 255, 255, 0.1);
+            color: #b8bfc4;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+            -webkit-app-region: no-drag;
+        }
+
+        /* 导航按钮悬停效果 */
+        .nav-button:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+            transform: scale(1.1);
+            color: #ffffff;
+        }
+
+        /* 导航按钮激活状态 */
+        .nav-button.active {
+            background-color: #4a9eff;
+            color: #ffffff;
+            transform: scale(1.05);
+        }
+
+        /* 导航按钮点击效果 */
+        .nav-button:active {
+            transform: scale(0.95);
+        }
+
+        /* 右侧内容区域 */
+        .left-content {
+            margin-left: 60px; /* 为左侧导航栏留出空间 */
+            height: calc(100% - 60px); /* 减去标题栏高度 */
+            background-color: #1d2129;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* 内容头部 */
+        .content-header {
+            padding: 20px;
+            border-bottom: 1px solid #3a3d45;
+            background-color: #252830;
+        }
+
+        .content-header h3 {
+            color: #ffffff;
+            font-size: 18px;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        /* 内容主体 */
+        .content-body {
+            padding: 20px;
+            height: calc(100% - 81px); /* 减去头部高度和边框 */
+            overflow-y: auto;
+            color: #b8bfc4;
+        }
+
+        /* 学生列表 */
+        .student-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        /* 学生项目 */
+        .student-item {
+            background-color: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            padding: 12px 16px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .student-item:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.2);
+            transform: translateX(4px);
+        }
+
+        /* 学生姓名 */
+        .student-name {
+            font-size: 16px;
+            font-weight: 500;
+            color: #ffffff;
+            margin-bottom: 4px;
+        }
+
+        /* 学生拼音 */
+        .student-pinyin {
+            font-size: 12px;
+            color: #8a8d93;
+            font-style: italic;
+        }
+
+        /* 无学生提示 */
+        .no-students {
+            text-align: center;
+            padding: 40px 20px;
+            color: #8a8d93;
+        }
+
+        .no-students p {
+            font-size: 14px;
+            margin: 0;
+        }
+
         /* 窗口调整大小手柄 */
         .resize-handle {
             position: absolute;
@@ -300,9 +463,24 @@
     <div class="main-content">
         <!-- 左侧区域 -->
         <div class="left-panel" id="leftPanel">
-            <div class="panel-content">
-                <h3>左侧内容</h3>
-                <p>左侧区域内容</p>
+            <!-- 左侧导航栏（固定60px宽） -->
+            <div class="left-nav" id="leftNav">
+                <div class="nav-content">
+                    <h4>#</h4>
+                    <div class="nav-buttons" id="navButtons">
+                        <!-- 首字母按钮将在这里动态生成 -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- 右侧内容区域 -->
+            <div class="left-content" id="leftContent">
+                <div class="content-header">
+                    <h3>学生列表</h3>
+                </div>
+                <div class="content-body" id="contentBody">
+                    <!-- 学生内容将在这里显示 -->
+                </div>
             </div>
         </div>
 
@@ -402,6 +580,178 @@
 
             // 页面加载时初始化
             initializeVerticalLine();
+
+            // 首字母导航功能
+            function initializeLetterNavigation() {
+                const navButtons = document.getElementById('navButtons');
+                const contentBody = document.getElementById('contentBody');
+
+                // 模拟学生数据（包含中文姓名）
+                const students = [
+                    '张三', '李四', '王五', '赵六', '钱七', '孙八', '李九', '周十',
+                    '白一', '陈二', '程三', '邓四', '冯五', '陈六', '白七', '程八',
+                    '黄九', '林十', '郑一', '王二', '张三', '李四', '赵五', '钱六',
+                    '孙七', '李八', '周九', '吴十', '郑一', '王二', '冯三', '陈四',
+                    '白五', '程六', '邓七', '黄八', '林九', '郑十', '冯一', '陈二'
+                ];
+
+                // 获取所有首字母（包括中文拼音首字母）
+                function getFirstLetters(students) {
+                    const letters = new Set();
+                    const pinyinModule = require('pinyin');
+                    const pinyin = pinyinModule.default || pinyinModule;
+
+                    students.forEach(name => {
+                        if (/^[a-zA-Z]/.test(name)) {
+                            // 英文姓名，直接取首字母
+                            letters.add(name[0].toUpperCase());
+                        } else if (/^[\u4e00-\u9fa5]/.test(name)) {
+                            // 中文姓名，取拼音首字母
+                            try {
+                                const result = pinyin(name[0], {
+                                    style: pinyin.STYLE_NORMAL,
+                                    heteronym: false
+                                });
+                                if (result && result[0] && result[0][0]) {
+                                    const firstLetter = result[0][0].charAt(0).toUpperCase();
+                                    letters.add(firstLetter);
+                                }
+                            } catch (error) {
+                                console.error('拼音转换失败:', error);
+                            }
+                        } else {
+                            // 其他字符，归类到#
+                            letters.add('#');
+                        }
+                    });
+
+                    // 按字母顺序排序
+                    return Array.from(letters).sort();
+                }
+
+                // 根据首字母分组学生
+                function groupStudentsByLetter(students) {
+                    const groups = {};
+                    const pinyinModule = require('pinyin');
+                    const pinyin = pinyinModule.default || pinyinModule;
+
+                    students.forEach(name => {
+                        let letter = '#';
+
+                        if (/^[a-zA-Z]/.test(name)) {
+                            letter = name[0].toUpperCase();
+                        } else if (/^[\u4e00-\u9fa5]/.test(name)) {
+                            try {
+                                const result = pinyin(name[0], {
+                                    style: pinyin.STYLE_NORMAL,
+                                    heteronym: false
+                                });
+                                if (result && result[0] && result[0][0]) {
+                                    letter = result[0][0].charAt(0).toUpperCase();
+                                }
+                            } catch (error) {
+                                letter = '#';
+                            }
+                        }
+
+                        if (!groups[letter]) {
+                            groups[letter] = [];
+                        }
+                        groups[letter].push(name);
+                    });
+
+                    return groups;
+                }
+
+                // 生成导航按钮
+                function createNavButtons(letters) {
+                    navButtons.innerHTML = '';
+                    letters.forEach(letter => {
+                        const button = document.createElement('button');
+                        button.className = 'nav-button';
+                        button.textContent = letter;
+                        button.setAttribute('data-letter', letter);
+
+                        button.addEventListener('click', function() {
+                            // 移除其他按钮的激活状态
+                            document.querySelectorAll('.nav-button').forEach(btn => {
+                                btn.classList.remove('active');
+                            });
+
+                            // 激活当前按钮
+                            this.classList.add('active');
+
+                            // 显示对应字母的学生
+                            showStudentsByLetter(letter);
+                        });
+
+                        navButtons.appendChild(button);
+                    });
+                }
+
+                // 显示特定字母的学生
+                function showStudentsByLetter(letter) {
+                    const groups = groupStudentsByLetter(students);
+                    const studentList = groups[letter] || [];
+
+                    contentBody.innerHTML = '';
+
+                    if (studentList.length === 0) {
+                        contentBody.innerHTML = `<div class="no-students">
+                            <p>没有找到以 ${letter} 开头的学生</p>
+                        </div>`;
+                        return;
+                    }
+
+                    // 创建学生列表
+                    const listContainer = document.createElement('div');
+                    listContainer.className = 'student-list';
+
+                    studentList.forEach(student => {
+                        const studentItem = document.createElement('div');
+                        studentItem.className = 'student-item';
+                        studentItem.innerHTML = `
+                            <div class="student-name">${student}</div>
+                            <div class="student-pinyin">${getPinyin(student)}</div>
+                        `;
+                        listContainer.appendChild(studentItem);
+                    });
+
+                    contentBody.appendChild(listContainer);
+                }
+
+                // 获取拼音（用于显示）
+                function getPinyin(name) {
+                    try {
+                        const pinyinModule = require('pinyin');
+                        const pinyin = pinyinModule.default || pinyinModule;
+                        const result = pinyin(name, {
+                            style: pinyin.STYLE_NORMAL,
+                            heteronym: false
+                        });
+                        return result.map(item => item[0]).join(' ');
+                    } catch (error) {
+                        return name;
+                    }
+                }
+
+                // 初始化
+                const letters = getFirstLetters(students);
+                createNavButtons(letters);
+
+                // 默认显示第一个字母的学生
+                if (letters.length > 0) {
+                    showStudentsByLetter(letters[0]);
+                    // 激活第一个按钮
+                    const firstButton = navButtons.querySelector('.nav-button');
+                    if (firstButton) {
+                        firstButton.classList.add('active');
+                    }
+                }
+            }
+
+            // 初始化首字母导航
+            initializeLetterNavigation();
 
             verticalLine.addEventListener('mousedown', function(e) {
                 e.preventDefault();
