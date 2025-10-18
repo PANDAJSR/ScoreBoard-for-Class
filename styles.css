@@ -1,0 +1,220 @@
+/* 基础样式 */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background-color: #1d2129;
+    height: 100vh;
+    overflow: hidden;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+/* 标题栏 */
+.title-bar {
+    height: 60px;
+    background-color: #404245;
+    -webkit-app-region: drag;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    border-top: 2px solid #505255;
+}
+
+.title-text {
+    color: #ffffff;
+    font-size: 24px;
+    font-weight: 600;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    height: 60px;
+    line-height: 1;
+}
+
+.window-controls {
+    position: absolute;
+    right: 16px;
+    display: none;
+    gap: 12px;
+}
+
+.window-button {
+    width: 32px;
+    height: 32px;
+    border: none;
+    cursor: pointer;
+    -webkit-app-region: no-drag;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    background-color: rgba(255, 255, 255, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    border-radius: 50%;
+    overflow: hidden;
+}
+
+.window-button:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+    transform: scale(1.1);
+}
+
+.window-button:active {
+    transform: scale(0.95);
+}
+
+.window-button svg {
+    width: 16px;
+    height: 16px;
+    fill: #ffffff;
+    opacity: 0.8;
+    transition: opacity 0.2s;
+    position: relative;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: auto;
+}
+
+.window-button:hover svg {
+    opacity: 1;
+}
+
+/* 齿轮图标旋转动画 */
+.window-button.settings-btn i {
+    transition: transform 0.3s ease;
+}
+
+.window-button.settings-btn:hover i {
+    transform: rotate(90deg);
+}
+
+/* 标题栏平台特定样式 */
+.title-bar.mac .title-text {
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.title-bar.other .title-text {
+    left: 16px;
+    transform: none;
+}
+
+.title-bar.other .window-controls {
+    display: flex;
+}
+
+/* 垂直分割线样式 */
+.vertical-line {
+    position: absolute;
+    left: 50%;
+    top: 0;
+    bottom: 0;
+    width: 4px;
+    background-color: #999ea3;
+    transform: translateX(-50%);
+    z-index: 10;
+    cursor: ew-resize;
+    transition: background-color 0.2s ease;
+}
+
+.vertical-line:hover {
+    background-color: #b8bfc4;
+    width: 6px;
+}
+
+.vertical-line.dragging {
+    background-color: #4a9eff;
+    width: 6px;
+}
+
+/* 主内容区域 */
+.main-content {
+    display: flex;
+    height: 100vh;
+    position: relative;
+}
+
+/* 左侧面板 */
+.left-panel {
+    width: calc(50% - 2px);
+    height: calc(100% - 60px);
+    background-color: #1d2129;
+    position: absolute;
+    top: 60px;
+    left: 0;
+    overflow: auto;
+}
+
+/* 右侧面板 */
+.right-panel {
+    width: calc(50% - 2px);
+    height: calc(100% - 60px);
+    background-color: #1d2129;
+    position: absolute;
+    top: 60px;
+    right: 0;
+    overflow: auto;
+}
+
+/* 面板内容 */
+.panel-content {
+    padding: 20px;
+    color: #ffffff;
+}
+
+.panel-content h3 {
+    margin-bottom: 10px;
+    color: #4a9eff;
+}
+
+.panel-content p {
+    line-height: 1.6;
+    color: #b8bfc4;
+}
+
+/* 窗口调整大小手柄 */
+.resize-handle {
+    position: absolute;
+    background-color: transparent;
+    z-index: 1000;
+}
+
+.resize-handle-bottom {
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 5px;
+    cursor: ns-resize;
+}
+
+.resize-handle-right {
+    top: 60px;
+    right: 0;
+    bottom: 5px;
+    width: 5px;
+    cursor: ew-resize;
+}
+
+.resize-handle-bottom-right {
+    bottom: 0;
+    right: 0;
+    width: 20px;
+    height: 20px;
+    cursor: nw-resize;
+}
+
+.resize-handle:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.resize-handle-bottom-right:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+}

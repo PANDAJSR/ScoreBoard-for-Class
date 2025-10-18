@@ -1,0 +1,303 @@
+/* 左侧导航栏（固定60px宽） */
+.left-nav {
+    width: 60px;
+    height: calc(100% - 60px);
+    background-color: #2a2d35;
+    position: absolute;
+    top: 60px;
+    left: 0;
+    border-right: 1px solid #3a3d45;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+/* 导航内容 */
+.nav-content {
+    padding: 10px 5px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* 导航标题 */
+.nav-content h4 {
+    color: #b8bfc4;
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 15px;
+    text-align: center;
+    padding: 8px 0;
+    border-bottom: 1px solid #3a3d45;
+    width: 100%;
+}
+
+/* 导航按钮容器 */
+.nav-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    width: 100%;
+    align-items: center;
+}
+
+/* 导航按钮（圆形风格） */
+.nav-button {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: none;
+    background-color: rgba(255, 255, 255, 0.1);
+    color: #b8bfc4;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+    -webkit-app-region: no-drag;
+}
+
+/* 导航按钮悬停效果 */
+.nav-button:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+    transform: scale(1.1);
+    color: #ffffff;
+}
+
+/* 导航按钮激活状态 */
+.nav-button.active {
+    background-color: #4a9eff;
+    color: #ffffff;
+    transform: scale(1.05);
+}
+
+/* 导航按钮点击效果 */
+.nav-button:active {
+    transform: scale(0.95);
+}
+
+/* 右侧内容区域 */
+.left-content {
+    margin-left: 60px;
+    height: calc(100% - 60px);
+    background-color: #1d2129;
+    position: relative;
+    overflow: hidden;
+}
+
+/* 内容头部 */
+.content-header {
+    padding: 20px;
+    border-bottom: 1px solid #3a3d45;
+    background-color: #252830;
+}
+
+.content-header h3 {
+    color: #ffffff;
+    font-size: 18px;
+    font-weight: 600;
+    margin: 0;
+}
+
+/* 内容主体 */
+.content-body {
+    padding: 20px;
+    height: calc(100% - 81px);
+    overflow-y: auto;
+    color: #b8bfc4;
+}
+
+/* 学生列表 */
+.student-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+/* 学生项目 */
+.student-item {
+    background-color: rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+    padding: 12px 16px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.student-item:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.2);
+    transform: translateX(4px);
+}
+
+/* 学生姓名 */
+.student-name {
+    font-size: 16px;
+    font-weight: 500;
+    color: #ffffff;
+    margin-bottom: 4px;
+}
+
+/* 学生拼音 */
+.student-pinyin {
+    font-size: 12px;
+    color: #8a8d93;
+    font-style: italic;
+}
+
+/* 无学生提示 */
+.no-students {
+    text-align: center;
+    padding: 40px 20px;
+    color: #8a8d93;
+}
+
+.no-students p {
+    font-size: 14px;
+    margin: 0;
+}
+
+/* 水波纹效果 */
+.ripple {
+    position: absolute;
+    border-radius: 50%;
+    background-color: rgba(255, 255, 255, 0.6);
+    transform: scale(0);
+    animation: ripple-animation 0.6s ease-out;
+    z-index: 1;
+}
+
+@keyframes ripple-animation {
+    to {
+        transform: scale(4);
+        opacity: 0;
+    }
+}
+
+/* 导航按钮水波纹 */
+.nav-button {
+    position: relative;
+}
+
+.nav-button .ripple {
+    background-color: rgba(255, 255, 255, 0.4);
+}
+
+/* 滚动条样式 */
+.nav-buttons::-webkit-scrollbar {
+    width: 4px;
+}
+
+.nav-buttons::-webkit-scrollbar-track {
+    background: #2a2d35;
+}
+
+.nav-buttons::-webkit-scrollbar-thumb {
+    background: #4a9eff;
+    border-radius: 2px;
+}
+
+.nav-buttons::-webkit-scrollbar-thumb:hover {
+    background: #5aa9ff;
+}
+
+.content-body::-webkit-scrollbar {
+    width: 8px;
+}
+
+.content-body::-webkit-scrollbar-track {
+    background: #1d2129;
+}
+
+.content-body::-webkit-scrollbar-thumb {
+    background: #4a9eff;
+    border-radius: 4px;
+}
+
+.content-body::-webkit-scrollbar-thumb:hover {
+    background: #5aa9ff;
+}
+
+/* 按钮组样式 */
+.nav-buttons {
+    scrollbar-width: thin;
+    scrollbar-color: #4a9eff #2a2d35;
+}
+
+/* 自定义滚动条样式 */
+.nav-buttons {
+    -ms-overflow-style: none;
+    scrollbar-width: thin;
+}
+
+.nav-buttons::-webkit-scrollbar {
+    width: 4px;
+}
+
+.nav-buttons::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.nav-buttons::-webkit-scrollbar-thumb {
+    background: #4a9eff;
+    border-radius: 2px;
+}
+
+.nav-buttons::-webkit-scrollbar-thumb:hover {
+    background: #5aa9ff;
+}
+
+/* 按钮间距优化 */
+.nav-buttons {
+    padding: 5px 0;
+}
+
+.nav-button {
+    margin: 2px 0;
+}
+
+/* 标题样式 */
+.nav-content h4 {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+
+/* 按钮文字样式 */
+.nav-button {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+
+/* 内容区域样式 */
+.content-header h3 {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+
+.student-name {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-weight: 500;
+    letter-spacing: 0.3px;
+}
+
+.student-pinyin {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-style: italic;
+    letter-spacing: 0.2px;
+}
+
+/* 焦点样式优化 */
+.nav-button:focus-visible,
+.student-item:focus-visible {
+    outline: 2px solid #4a9eff;
+    outline-offset: 2px;
+}
+
+/* 完美结束 */
