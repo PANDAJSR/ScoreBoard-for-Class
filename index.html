@@ -164,12 +164,12 @@
         .vertical-line {
             position: absolute;
             left: 50%;
-            top: 60px; /* 从标题栏下方开始 */
+            top: 0; /* 从顶部开始，触碰到标题栏 */
             bottom: 0;
             width: 4px; /* 增加宽度便于拖拽 */
             background-color: #999ea3;
             transform: translateX(-50%);
-            z-index: 1;
+            z-index: 10; /* 提高层级确保在标题栏上方 */
             cursor: ew-resize; /* 水平调整鼠标指针 */
             transition: background-color 0.2s ease;
         }
@@ -189,25 +189,29 @@
         /* 主内容区域 */
         .main-content {
             display: flex;
-            height: calc(100vh - 60px); /* 减去标题栏高度 */
+            height: 100vh; /* 全屏高度，分割线从顶部开始 */
             position: relative;
         }
 
         /* 左侧面板 */
         .left-panel {
             width: calc(50% - 2px); /* 减去分割线宽度的一半 */
-            height: 100%;
+            height: calc(100% - 60px); /* 减去标题栏高度，从标题栏下方开始 */
             background-color: #1d2129;
-            position: relative;
+            position: absolute;
+            top: 60px; /* 从标题栏下方开始 */
+            left: 0;
             overflow: auto;
         }
 
         /* 右侧面板 */
         .right-panel {
             width: calc(50% - 2px); /* 减去分割线宽度的一半 */
-            height: 100%;
+            height: calc(100% - 60px); /* 减去标题栏高度，从标题栏下方开始 */
             background-color: #1d2129;
-            position: relative;
+            position: absolute;
+            top: 60px; /* 从标题栏下方开始 */
+            right: 0;
             overflow: auto;
         }
 
@@ -376,6 +380,29 @@
             let startX = 0;
             let startLeft = 0;
 
+            // 初始化分割线位置（从顶部开始）
+            function initializeVerticalLine() {
+                const windowWidth = window.innerWidth;
+                const initialLeft = windowWidth / 2; // 初始居中
+
+                // 设置分割线位置（从顶部开始）
+                verticalLine.style.left = initialLeft + 'px';
+                verticalLine.style.top = '0px';
+                verticalLine.style.transform = 'none';
+
+                // 初始化面板位置
+                leftPanel.style.width = (initialLeft - 2) + 'px';
+                leftPanel.style.left = '0px';
+                leftPanel.style.top = '60px'; // 从标题栏下方开始
+
+                rightPanel.style.width = (windowWidth - initialLeft - 2) + 'px';
+                rightPanel.style.left = (initialLeft + 2) + 'px';
+                rightPanel.style.top = '60px'; // 从标题栏下方开始
+            }
+
+            // 页面加载时初始化
+            initializeVerticalLine();
+
             verticalLine.addEventListener('mousedown', function(e) {
                 e.preventDefault();
                 isDraggingLine = true;
@@ -392,19 +419,22 @@
                 const windowWidth = window.innerWidth;
                 const newLeft = startLeft + deltaX;
 
-                // 计算左右两侧宽度
+                // 计算左右两侧宽度（考虑整个窗口宽度）
                 const leftWidth = newLeft;
                 const rightWidth = windowWidth - newLeft;
 
                 // 确保左右两侧都不小于最小宽度
                 if (leftWidth >= minSideWidth && rightWidth >= minSideWidth) {
-                    // 更新分割线位置
+                    // 更新分割线位置（从顶部开始）
                     verticalLine.style.left = newLeft + 'px';
                     verticalLine.style.transform = 'none'; // 移除transform以便精确定位
 
-                    // 更新左右面板宽度
+                    // 更新左右面板宽度和位置（从标题栏下方开始）
                     leftPanel.style.width = (newLeft - 2) + 'px'; // 减去分割线宽度
+                    leftPanel.style.left = '0px'; // 从左侧开始
+
                     rightPanel.style.width = (windowWidth - newLeft - 2) + 'px'; // 减去分割线宽度
+                    rightPanel.style.left = (newLeft + 2) + 'px'; // 从分割线右侧开始
                 }
             });
 
