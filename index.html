@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ScoreBoard</title>
+    <!-- Font Awesome 图标字体 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * {
             margin: 0;
@@ -45,29 +47,102 @@
             position: absolute;
             right: 16px;
             display: none;
-            gap: 8px;
+            gap: 12px;
         }
 
         .window-button {
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
+            width: 32px;
+            height: 32px;
             border: none;
             cursor: pointer;
             -webkit-app-region: no-drag;
-            transition: opacity 0.2s;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            background-color: rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            border-radius: 50%;
+            overflow: hidden;
         }
 
         .window-button:hover {
-            opacity: 0.8;
+            background-color: rgba(255, 255, 255, 0.2);
+            transform: scale(1.1);
         }
 
-        .minimize-btn {
-            background-color: #ffbd2e;
+        .window-button:active {
+            transform: scale(0.95);
         }
 
-        .close-btn {
-            background-color: #ff5f57;
+        /* Font Awesome 图标样式 */
+        .window-button i {
+            font-size: 14px;
+            color: #ffffff;
+            opacity: 0.9;
+            transition: opacity 0.2s;
+            position: relative;
+            z-index: 2;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 16px;
+            height: 16px;
+            margin: auto; /* 确保完全居中 */
+        }
+
+        .window-button:hover i {
+            opacity: 1;
+        }
+
+        /* 齿轮图标旋转动画 */
+        .window-button.settings-btn:hover i {
+            animation: rotate-cog 0.6s ease-in-out;
+        }
+
+        @keyframes rotate-cog {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .window-button svg {
+            width: 16px;
+            height: 16px;
+            fill: #ffffff;
+            opacity: 0.9;
+            transition: opacity 0.2s;
+            position: relative;
+            z-index: 2;
+        }
+
+        .window-button:hover svg {
+            opacity: 1;
+        }
+
+        .close-btn:hover {
+            background-color: #e81123;
+        }
+
+        .close-btn:hover svg {
+            fill: #ffffff;
+            opacity: 1;
+        }
+
+        /* 水波纹效果 */
+        .ripple {
+            position: absolute;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.6);
+            transform: scale(0);
+            animation: ripple-animation 0.6s ease-out;
+            z-index: 1;
+        }
+
+        @keyframes ripple-animation {
+            to {
+                transform: scale(4);
+                opacity: 0;
+            }
         }
 
         .title-bar.mac .title-text {
@@ -83,31 +158,102 @@
         .title-bar.other .window-controls {
             display: flex;
         }
+
+        /* 垂直分割线样式 */
+        .vertical-line {
+            position: absolute;
+            left: 50%;
+            top: 60px; /* 从标题栏下方开始 */
+            bottom: 0;
+            width: 2px;
+            background-color: #999ea3;
+            transform: translateX(-50%);
+            z-index: 1;
+        }
     </style>
 </head>
 <body>
     <div class="title-bar" id="titleBar">
         <div class="title-text">ScoreBoard</div>
         <div class="window-controls">
-            <button class="window-button minimize-btn" id="minimizeBtn"></button>
-            <button class="window-button close-btn" id="closeBtn"></button>
+            <button class="window-button settings-btn" id="settingsBtn">
+                <i class="fas fa-cog"></i>
+            </button>
+            <button class="window-button minimize-btn" id="minimizeBtn">
+                <svg viewBox="0 0 16 16">
+                    <path d="M14 8v1H3V8h11z" fill-rule="evenodd"></path>
+                </svg>
+            </button>
+            <button class="window-button close-btn" id="closeBtn">
+                <svg viewBox="0 0 16 16">
+                    <path d="M7.47 8l3.22 3.22a.75.75 0 11-1.06 1.06L6.4 9.06 3.18 12.28a.75.75 0 01-1.06-1.06L5.34 8 2.12 4.78a.75.75 0 011.06-1.06L6.4 6.94 9.62 3.72a.75.75 0 011.06 1.06L7.46 8z" fill-rule="evenodd"></path>
+                </svg>
+            </button>
         </div>
     </div>
 
+    <!-- 垂直分割线 -->
+    <div class="vertical-line"></div>
+
     <script>
+        // 添加调试信息
+        console.log('Script started, waiting for platform info...');
+
+        // 水波纹效果函数
+        function createRipple(event, button) {
+            const ripple = document.createElement('span');
+            const rect = button.getBoundingClientRect();
+            const size = Math.max(rect.width, rect.height);
+            const x = event.clientX - rect.left - size / 2;
+            const y = event.clientY - rect.top - size / 2;
+
+            ripple.style.width = ripple.style.height = size + 'px';
+            ripple.style.left = x + 'px';
+            ripple.style.top = y + 'px';
+            ripple.classList.add('ripple');
+
+            button.appendChild(ripple);
+
+            setTimeout(() => {
+                ripple.remove();
+            }, 600);
+        }
+
         window.electronAPI.onPlatformInfo((data) => {
+            console.log('Platform info received:', data);
             const titleBar = document.getElementById('titleBar');
             if (data.isMac) {
                 titleBar.classList.add('mac');
+                console.log('Applied macOS styles');
             } else {
                 titleBar.classList.add('other');
+                console.log('Applied non-macOS styles, showing window controls');
 
-                document.getElementById('minimizeBtn').addEventListener('click', () => {
-                    window.electronAPI.minimizeWindow();
+                const minimizeBtn = document.getElementById('minimizeBtn');
+                const closeBtn = document.getElementById('closeBtn');
+
+                // 为按钮添加水波纹效果
+                minimizeBtn.addEventListener('click', (event) => {
+                    createRipple(event, minimizeBtn);
+                    setTimeout(() => {
+                        window.electronAPI.minimizeWindow();
+                    }, 200);
                 });
 
-                document.getElementById('closeBtn').addEventListener('click', () => {
-                    window.electronAPI.closeWindow();
+                closeBtn.addEventListener('click', (event) => {
+                    createRipple(event, closeBtn);
+                    setTimeout(() => {
+                        window.electronAPI.closeWindow();
+                    }, 200);
+                });
+
+                // 设置按钮事件
+                const settingsBtn = document.getElementById('settingsBtn');
+                settingsBtn.addEventListener('click', (event) => {
+                    createRipple(event, settingsBtn);
+                    setTimeout(() => {
+                        window.electronAPI.openSettings();
+                    }, 200);
                 });
             }
         });

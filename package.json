@@ -5,6 +5,12 @@
   "main": "main.js",
   "scripts": {
     "start": "electron .",
+    "build": "electron-builder",
+    "build-win": "electron-builder --win",
+    "build-win-x64": "electron-builder --win --x64",
+    "build-win-ia32": "electron-builder --win --ia32",
+    "dist": "electron-builder --win --x64",
+    "pack": "electron-builder --dir",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -19,6 +25,40 @@
   },
   "homepage": "https://github.com/PANDAJSR/ScoreBoard-for-Class#readme",
   "devDependencies": {
-    "electron": "^38.3.0"
+    "electron": "^38.3.0",
+    "electron-builder": "^26.0.12"
+  },
+  "build": {
+    "appId": "com.scoreboard.class",
+    "productName": "ScoreBoard for Class",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "**/*",
+      "!node_modules/**/*",
+      "!dist/**/*",
+      "!.git/**/*",
+      "!*.md",
+      "!*.txt"
+    ],
+    "win": {
+      "target": [
+        {
+          "target": "portable",
+          "arch": [
+            "x64"
+          ]
+        }
+      ]
+    },
+    "asar": true,
+    "asarUnpack": [
+      "**\\*.{node,dll}"
+    ]
+  },
+  "dependencies": {
+    "pinyin": "^4.0.0",
+    "sqlite3": "^5.1.7"
   }
 }
