@@ -87,12 +87,26 @@ body {
     opacity: 1;
 }
 
+/* Font Awesome 图标样式 */
+.window-button i {
+    color: #ffffff !important;
+    font-size: 16px;
+    opacity: 0.8;
+    transition: opacity 0.2s, transform 0.3s ease;
+    display: block;
+    line-height: 1;
+}
+
+.window-button:hover i {
+    opacity: 1;
+}
+
 /* 齿轮图标旋转动画 */
-.window-button.settings-btn i {
+.window-button.settings-btn .icon {
     transition: transform 0.3s ease;
 }
 
-.window-button.settings-btn:hover i {
+.window-button.settings-btn:hover .icon {
     transform: rotate(90deg);
 }
 
@@ -217,4 +231,70 @@ body {
 
 .resize-handle-bottom-right:hover {
     background-color: rgba(255, 255, 255, 0.2);
+}
+
+/* Font Awesome 图标全局样式 */
+.fas, .far, .fab {
+    font-family: 'Font Awesome 5 Free' !important;
+    font-weight: 900 !important;
+    font-style: normal !important;
+    font-variant: normal !important;
+    text-rendering: auto !important;
+    line-height: 1 !important;
+    -webkit-font-smoothing: antialiased !important;
+    -moz-osx-font-smoothing: grayscale !important;
+}
+
+/* 确保Font Awesome图标颜色 */
+.window-button .fas {
+    color: #ffffff !important;
+    font-size: 16px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 100% !important;
+    height: 100% !important;
+}
+
+/* 调试：检查图标是否正确加载 */
+.window-button::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    pointer-events: none;
+}
+
+/* 确保按钮内容居中 */
+.window-button {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    text-align: center !important;
+    line-height: 1 !important;
+    vertical-align: middle !important;
+}
+
+/* 强制图标可见 */
+.window-button i::before {
+    display: inline-block !important;
+    vertical-align: middle !important;
+    line-height: 1 !important;
+}
+
+/* Unicode图标样式 */
+.window-button .icon {
+    color: #ffffff !important;
+    font-size: 16px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 100% !important;
+    height: 100% !important;
+    line-height: 1 !important;
+    text-align: center !important;
 }
