@@ -37,7 +37,7 @@
             font-weight: 600;
         }
 
-        /* 关闭按钮 - 修复交互问题 */
+        /* 关闭按钮 - 修复交互问题，添加水波纹效果 */
         .close-button {
             position: absolute;
             top: 50%;
@@ -46,7 +46,7 @@
             width: 32px;
             height: 32px;
             border: none;
-            background-color: rgba(255, 255, 255, 0.2); /* 调亮背景便于观察 */
+            background-color: rgba(255, 255, 255, 0.1); /* 与主窗口一致的基础色 */
             border-radius: 50%;
             cursor: pointer;
             display: grid;
@@ -56,10 +56,12 @@
             z-index: 10;
             line-height: 0; /* 移除行高影响 */
             padding: 0; /* 移除内边距 */
+            overflow: hidden; /* 为了水波纹效果 */
+            position: relative; /* 为了水波纹定位 */
         }
 
         .close-button:hover {
-            background-color: #e81123;
+            background-color: rgba(255, 255, 255, 0.3); /* 改为与主窗口一致的风格 */
             transform: translateY(-50%) scale(1.1);
         }
 
@@ -79,6 +81,30 @@
 
         .close-button:hover svg {
             opacity: 1;
+        }
+
+        /* 水波纹效果 */
+        .ripple {
+            position: absolute;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.6);
+            transform: scale(0);
+            animation: ripple-animation 0.6s ease-out;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        @keyframes ripple-animation {
+            to {
+                transform: scale(4);
+                opacity: 0;
+            }
+        }
+
+        /* 确保按钮可以包含水波纹 */
+        .close-button {
+            position: relative;
+            overflow: hidden;
         }
 
         /* 内容区域 */
@@ -199,7 +225,7 @@
     </div>
 
     <script>
-        // 关闭按钮事件处理
+        // 关闭按钮事件处理 - 添加水波纹效果和修复颜色问题
         const closeBtn = document.getElementById('closeBtn');
 
         function handleClose() {
@@ -210,8 +236,30 @@
             }
         }
 
+        // 创建水波纹效果
+        function createRipple(event, button) {
+            const ripple = document.createElement('span');
+            ripple.className = 'ripple';
+
+            const rect = button.getBoundingClientRect();
+            const size = Math.max(rect.width, rect.height);
+            const x = event.clientX - rect.left - size / 2;
+            const y = event.clientY - rect.top - size / 2;
+
+            ripple.style.width = ripple.style.height = size + 'px';
+            ripple.style.left = x + 'px';
+            ripple.style.top = y + 'px';
+
+            button.appendChild(ripple);
+
+            setTimeout(() => {
+                ripple.remove();
+            }, 600);
+        }
+
         function handleMouseEnter() {
-            closeBtn.style.backgroundColor = '#e81123';
+            // 改为与主窗口一致的风格，不再是红色
+            closeBtn.style.backgroundColor = 'rgba(255, 255, 255, 0.3)';
             closeBtn.style.transform = 'translateY(-50%) scale(1.1)';
         }
 
@@ -228,11 +276,21 @@
             closeBtn.style.transform = 'translateY(-50%) scale(1.1)';
         }
 
-        // 绑定事件
-        closeBtn.addEventListener('click', handleClose);
+        // 绑定事件 - 添加水波纹效果
+        closeBtn.addEventListener('click', (event) => {
+            createRipple(event, closeBtn);
+            setTimeout(() => {
+                handleClose();
+            }, 200); // 延迟关闭以显示水波纹效果
+        });
+
         closeBtn.addEventListener('mouseenter', handleMouseEnter);
         closeBtn.addEventListener('mouseleave', handleMouseLeave);
-        closeBtn.addEventListener('mousedown', handleMouseDown);
+        closeBtn.addEventListener('mousedown', (event) => {
+            handleMouseDown();
+            // 在鼠标按下时也创建水波纹
+            createRipple(event, closeBtn);
+        });
         closeBtn.addEventListener('mouseup', handleMouseUp);
 
         // 确保按钮在窗口加载后可用
