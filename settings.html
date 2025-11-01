@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; font-src 'self' https://cdnjs.cloudflare.com; img-src 'self' data:;">
     <title>设置</title>
     <style>
         * {
@@ -35,38 +36,60 @@
             color: #ffffff;
             font-size: 20px;
             font-weight: 600;
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
         }
 
-        /* 关闭按钮 - 修复交互问题，添加水波纹效果 */
+        /* 平台特定样式 */
+        .title-bar.mac .title-text {
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .title-bar.other .title-text {
+            left: 16px;
+            transform: none;
+        }
+
+        .title-bar.other .close-button {
+            right: 16px;
+        }
+
+        .title-bar.mac .close-button {
+            left: 16px;
+            right: auto;
+        }
+
+        /* 关闭按钮 - 修复位置问题，与主窗口保持一致 */
         .close-button {
             position: absolute;
-            top: 50%;
-            right: 16px;
-            transform: translateY(-50%);
+            top: 14px; /* 与主窗口按钮对齐 */
+            right: 16px; /* 默认在右边（Windows样式） */
             width: 32px;
             height: 32px;
             border: none;
             background-color: rgba(255, 255, 255, 0.1); /* 与主窗口一致的基础色 */
             border-radius: 50%;
             cursor: pointer;
-            display: grid;
-            place-items: center; /* CSS Grid完美居中 */
+            display: flex; /* 使用flex布局替代grid */
+            align-items: center;
+            justify-content: center; /* Flex完美居中 */
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             -webkit-app-region: no-drag; /* 关键：确保按钮不可拖动 */
             z-index: 10;
-            line-height: 0; /* 移除行高影响 */
+            line-height: 1; /* 恢复正常的行高 */
             padding: 0; /* 移除内边距 */
             overflow: hidden; /* 为了水波纹效果 */
-            position: relative; /* 为了水波纹定位 */
         }
 
         .close-button:hover {
             background-color: rgba(255, 255, 255, 0.3); /* 改为与主窗口一致的风格 */
-            transform: translateY(-50%) scale(1.1);
+            transform: scale(1.1);
         }
 
         .close-button:active {
-            transform: translateY(-50%) scale(0.95);
+            transform: scale(0.95);
         }
 
         .close-button svg {
@@ -226,7 +249,7 @@
 
     <script>
         // 关闭按钮事件处理 - 添加水波纹效果和修复颜色问题
-        const closeBtn = document.getElementById('closeBtn');
+        let closeBtn = null; // 延迟获取元素
 
         function handleClose() {
             if (window.electronAPI) {
@@ -260,43 +283,216 @@
         function handleMouseEnter() {
             // 改为与主窗口一致的风格，不再是红色
             closeBtn.style.backgroundColor = 'rgba(255, 255, 255, 0.3)';
-            closeBtn.style.transform = 'translateY(-50%) scale(1.1)';
+            closeBtn.style.transform = 'scale(1.1)';
         }
 
         function handleMouseLeave() {
             closeBtn.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
-            closeBtn.style.transform = 'translateY(-50%) scale(1)';
+            closeBtn.style.transform = 'scale(1)';
         }
 
         function handleMouseDown() {
-            closeBtn.style.transform = 'translateY(-50%) scale(0.95)';
+            closeBtn.style.transform = 'scale(0.95)';
         }
 
         function handleMouseUp() {
-            closeBtn.style.transform = 'translateY(-50%) scale(1.1)';
+            if (closeBtn) {
+                closeBtn.style.transform = 'scale(1.1)';
+            }
         }
 
-        // 绑定事件 - 添加水波纹效果
-        closeBtn.addEventListener('click', (event) => {
-            createRipple(event, closeBtn);
-            setTimeout(() => {
-                handleClose();
-            }, 200); // 延迟关闭以显示水波纹效果
-        });
+        function handleMouseEnter() {
+            if (closeBtn) {
+                // 改为与主窗口一致的风格，不再是红色
+                closeBtn.style.backgroundColor = 'rgba(255, 255, 255, 0.3)';
+                closeBtn.style.transform = 'scale(1.1)';
+            }
+        }
 
-        closeBtn.addEventListener('mouseenter', handleMouseEnter);
-        closeBtn.addEventListener('mouseleave', handleMouseLeave);
-        closeBtn.addEventListener('mousedown', (event) => {
-            handleMouseDown();
-            // 在鼠标按下时也创建水波纹
-            createRipple(event, closeBtn);
-        });
-        closeBtn.addEventListener('mouseup', handleMouseUp);
+        function handleMouseLeave() {
+            if (closeBtn) {
+                closeBtn.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
+                closeBtn.style.transform = 'scale(1)';
+            }
+        }
+
+        function handleMouseDown() {
+            if (closeBtn) {
+                closeBtn.style.transform = 'scale(0.95)';
+            }
+        }
 
         // 确保按钮在窗口加载后可用
         document.addEventListener('DOMContentLoaded', function() {
+            // 获取关闭按钮元素
+            closeBtn = document.getElementById('closeBtn');
+            if (closeBtn) {
+                console.log('设置界面 - 关闭按钮已找到');
+                bindCloseButtonEvents(); // 绑定关闭按钮事件
+            } else {
+                console.error('设置界面 - 找不到关闭按钮');
+            }
+
             loadStudents(); // 加载学生数据
+            detectPlatform(); // 检测平台并应用相应样式
         });
+
+        // 绑定关闭按钮事件
+        function bindCloseButtonEvents() {
+            if (!closeBtn) return;
+
+            // 绑定事件 - 只在鼠标按下时创建水波纹，避免重复触发
+            closeBtn.addEventListener('click', (event) => {
+                // 不再在click中创建水波纹，避免重复
+                setTimeout(() => {
+                    handleClose();
+                }, 200); // 延迟关闭以显示水波纹效果
+            });
+
+            closeBtn.addEventListener('mouseenter', handleMouseEnter);
+            closeBtn.addEventListener('mouseleave', handleMouseLeave);
+            closeBtn.addEventListener('mousedown', (event) => {
+                handleMouseDown();
+                // 只在鼠标按下时创建水波纹
+                createRipple(event, closeBtn);
+            });
+            closeBtn.addEventListener('mouseup', handleMouseUp);
+        }
+
+        // 平台检测功能
+        function detectPlatform() {
+            const titleBar = document.getElementById('titleBar');
+            const closeBtn = document.getElementById('closeBtn');
+            console.log('设置界面 - 开始平台检测，titleBar:', titleBar, 'closeBtn:', closeBtn);
+
+            // 立即检查当前样式状态
+            if (titleBar) {
+                console.log('设置界面 - titleBar初始样式类:', titleBar.className);
+                console.log('设置界面 - titleBar计算样式:', window.getComputedStyle(titleBar));
+            }
+            if (closeBtn) {
+                console.log('设置界面 - closeBtn初始样式类:', closeBtn.className);
+                console.log('设置界面 - closeBtn计算样式:', window.getComputedStyle(closeBtn));
+                console.log('设置界面 - closeBtn位置:', {
+                    top: closeBtn.offsetTop,
+                    left: closeBtn.offsetLeft,
+                    right: window.getComputedStyle(closeBtn).right
+                });
+            }
+
+            // 强制应用Windows样式（用于测试和确保正确显示）
+            if (titleBar) {
+                titleBar.classList.remove('mac', 'other');
+                titleBar.classList.add('other');
+                console.log('设置界面 - 强制应用Windows样式（other）');
+                console.log('设置界面 - 应用后样式类:', titleBar.className);
+
+                // 直接设置按钮样式作为后备方案
+                if (closeBtn) {
+                    console.log('设置界面 - 直接设置按钮样式');
+                    closeBtn.style.position = 'absolute';
+                    closeBtn.style.top = '14px';
+                    closeBtn.style.right = '16px';
+                    closeBtn.style.left = 'auto';
+                    console.log('设置界面 - 直接样式设置完成');
+                }
+
+                // 立即检查样式应用结果
+                setTimeout(() => {
+                    console.log('设置界面 - 延迟检查样式应用结果:');
+                    if (closeBtn) {
+                        const computedStyle = window.getComputedStyle(closeBtn);
+                        console.log('设置界面 - closeBtn最终计算样式:', {
+                            position: computedStyle.position,
+                            top: computedStyle.top,
+                            right: computedStyle.right,
+                            left: computedStyle.left,
+                            offsetTop: closeBtn.offsetTop,
+                            offsetLeft: closeBtn.offsetLeft,
+                            offsetWidth: closeBtn.offsetWidth,
+                            offsetHeight: closeBtn.offsetHeight
+                        });
+
+                        // 检查按钮实际位置
+                        const rect = closeBtn.getBoundingClientRect();
+                        console.log('设置界面 - closeBtn实际位置:', {
+                            x: rect.x,
+                            y: rect.y,
+                            width: rect.width,
+                            height: rect.height,
+                            right: rect.right,
+                            bottom: rect.bottom
+                        });
+
+                        // 检查标题栏位置
+                        const titleBarRect = titleBar.getBoundingClientRect();
+                        console.log('设置界面 - titleBar位置:', {
+                            x: titleBarRect.x,
+                            y: titleBarRect.y,
+                            width: titleBarRect.width,
+                            height: titleBarRect.height,
+                            right: titleBarRect.right
+                        });
+
+                        // 判断按钮是否在正确位置
+                        const expectedRight = 16; // 期望的右边距
+                        const actualRight = titleBarRect.width - (closeBtn.offsetLeft + closeBtn.offsetWidth);
+                        console.log('设置界面 - 右边距检查:', {
+                            expectedRight: expectedRight,
+                            actualRight: actualRight,
+                            isCorrectPosition: actualRight <= expectedRight + 5 && actualRight >= expectedRight - 5
+                        });
+                    }
+                }, 100);
+            }
+
+            if (window.electronAPI && window.electronAPI.onPlatformInfo) {
+                console.log('设置界面 - electronAPI可用');
+
+                window.electronAPI.onPlatformInfo((data) => {
+                    console.log('设置界面 - 收到平台信息:', data);
+
+                    if (titleBar) {
+                        // 清除之前的类
+                        titleBar.classList.remove('mac', 'other');
+
+                        if (data.isMac) {
+                            titleBar.classList.add('mac');
+                            console.log('设置界面 - 应用了macOS样式');
+                        } else {
+                            titleBar.classList.add('other');
+                            console.log('设置界面 - 应用了非macOS样式');
+                        }
+
+                        // 检查应用的样式
+                        console.log('设置界面 - 当前样式类:', titleBar.className);
+                        console.log('设置界面 - 按钮位置样式:');
+                        console.log('- mac样式下按钮应在左边');
+                        console.log('- other样式下按钮应在右边');
+                    } else {
+                        console.error('设置界面 - 找不到titleBar元素');
+                    }
+                });
+
+                // 请求平台信息
+                if (window.electronAPI.getPlatformInfo) {
+                    console.log('设置界面 - 请求平台信息');
+                    window.electronAPI.getPlatformInfo();
+                } else {
+                    console.warn('设置界面 - getPlatformInfo方法不可用');
+                }
+            } else {
+                // 默认使用非macOS样式（Windows）
+                console.log('设置界面 - electronAPI不可用，使用默认Windows样式');
+                if (titleBar) {
+                    titleBar.classList.add('other');
+                    console.log('设置界面 - 默认应用非macOS样式');
+                    console.log('设置界面 - 当前样式类:', titleBar.className);
+                } else {
+                    console.error('设置界面 - 找不到titleBar元素');
+                }
+            }
+        }
 
         // 学生数据管理
         let saveTimeout = null;

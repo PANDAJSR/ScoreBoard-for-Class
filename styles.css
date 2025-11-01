@@ -298,3 +298,31 @@ body {
     line-height: 1 !important;
     text-align: center !important;
 }
+
+/* 水波纹效果 */
+.ripple {
+    position: absolute;
+    border-radius: 50%;
+    background-color: rgba(255, 255, 255, 0.6);
+    transform: scale(0);
+    animation: ripple-animation 0.6s ease-out;
+    z-index: 1;
+    pointer-events: none;
+}
+
+@keyframes ripple-animation {
+    to {
+        transform: scale(4);
+        opacity: 0;
+    }
+}
+
+/* 窗口按钮水波纹 */
+.window-button {
+    position: relative;
+    overflow: hidden;
+}
+
+.window-button .ripple {
+    background-color: rgba(255, 255, 255, 0.4);
+}

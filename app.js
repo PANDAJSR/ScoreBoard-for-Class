@@ -199,8 +199,13 @@ class ScoreBoardApp {
         const settingsBtn = document.getElementById('settingsBtn');
 
         if (minimizeBtn) {
-            minimizeBtn.addEventListener('click', (e) => {
+            // 鼠标按下时创建水波纹
+            minimizeBtn.addEventListener('mousedown', (e) => {
                 this.createRipple(minimizeBtn, e);
+            });
+
+            // 点击时执行功能
+            minimizeBtn.addEventListener('click', (e) => {
                 setTimeout(() => {
                     window.electronAPI.minimizeWindow();
                 }, 200);
@@ -208,8 +213,13 @@ class ScoreBoardApp {
         }
 
         if (closeBtn) {
-            closeBtn.addEventListener('click', (e) => {
+            // 鼠标按下时创建水波纹
+            closeBtn.addEventListener('mousedown', (e) => {
                 this.createRipple(closeBtn, e);
+            });
+
+            // 点击时执行功能
+            closeBtn.addEventListener('click', (e) => {
                 setTimeout(() => {
                     window.electronAPI.closeWindow();
                 }, 200);
@@ -217,8 +227,13 @@ class ScoreBoardApp {
         }
 
         if (settingsBtn) {
-            settingsBtn.addEventListener('click', (e) => {
+            // 鼠标按下时创建水波纹
+            settingsBtn.addEventListener('mousedown', (e) => {
                 this.createRipple(settingsBtn, e);
+            });
+
+            // 点击时执行功能
+            settingsBtn.addEventListener('click', (e) => {
                 setTimeout(() => {
                     window.electronAPI.openSettings();
                 }, 200);

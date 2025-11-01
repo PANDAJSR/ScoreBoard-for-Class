@@ -54,10 +54,25 @@ class LetterNavigation {
             }
         });
 
+        // 导航按钮鼠标按下事件 - 添加水波纹效果
+        this.navButtons.addEventListener('mousedown', (e) => {
+            if (e.target.classList.contains('nav-button')) {
+                this.createRipple(e.target, e);
+            }
+        });
+
         // 学生项目点击事件
         this.contentBody.addEventListener('click', (e) => {
             if (e.target.closest('.student-item')) {
                 this.handleStudentClick(e.target.closest('.student-item'));
+            }
+        });
+
+        // 学生项目鼠标按下事件 - 添加水波纹效果
+        this.contentBody.addEventListener('mousedown', (e) => {
+            const studentItem = e.target.closest('.student-item');
+            if (studentItem) {
+                this.createRipple(studentItem, e);
             }
         });
 
@@ -115,9 +130,7 @@ class LetterNavigation {
     handleNavButtonClick(button) {
         const letter = button.getAttribute('data-letter');
 
-        // 创建水波纹效果
-        this.createRipple(button, event);
-
+        // 不再在click中创建水波纹，避免重复触发
         // 激活按钮
         this.activateButton(letter);
 
@@ -134,9 +147,7 @@ class LetterNavigation {
     handleStudentClick(studentItem) {
         const studentName = studentItem.querySelector('.student-name').textContent;
 
-        // 创建水波纹效果
-        this.createRipple(studentItem, event);
-
+        // 不再在click中创建水波纹，避免重复触发
         // 触发自定义事件
         this.dispatchEvent('student-selected', {
             name: studentName,
@@ -307,23 +318,19 @@ class LetterNavigation {
     }
 
     /**
-     * 添加水波纹效果
+     * 添加水波纹效果 - 已废弃，现在使用mousedown事件
      */
     addRippleEffect() {
-        this.navButtons.addEventListener('click', (e) => {
-            if (e.target.classList.contains('nav-button')) {
-                this.createRipple(e.target, e);
-            }
-        });
+        // 不再添加click事件监听器，避免重复触发
+        // 水波纹效果已在bindEvents方法中通过mousedown事件处理
     }
 
     /**
-     * 添加按钮水波纹效果
+     * 添加按钮水波纹效果 - 已废弃，现在使用mousedown事件
      */
     addButtonRippleEffect(button) {
-        button.addEventListener('click', (e) => {
-            this.createRipple(button, e);
-        });
+        // 不再添加click事件监听器，避免重复触发
+        // 水波纹效果已在创建按钮时通过mousedown事件处理
     }
 
     /**

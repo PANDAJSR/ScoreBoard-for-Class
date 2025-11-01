@@ -59,6 +59,7 @@
   },
   "dependencies": {
     "pinyin": "^4.0.0",
+    "segmentit": "^2.0.3",
     "sqlite3": "^5.1.7"
   }
 }

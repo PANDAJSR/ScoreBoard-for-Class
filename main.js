@@ -13,6 +13,8 @@ function createSettingsWindow() {
     return;
   }
 
+  const isMac = process.platform === 'darwin'; // 定义isMac变量
+
   settingsWindow = new BrowserWindow({
     width: 450,
     height: 600,
@@ -34,6 +36,27 @@ function createSettingsWindow() {
   // 设置窗口关闭时的处理
   settingsWindow.on('closed', () => {
     settingsWindow = null;
+  });
+
+  // 发送平台信息到设置窗口
+  settingsWindow.webContents.once('dom-ready', () => {
+    console.log('设置窗口 DOM ready, sending platform info:', { isMac: isMac, platform: process.platform });
+    settingsWindow.webContents.send('platform-info', {
+      isMac: isMac,
+      platform: process.platform
+    });
+  });
+
+  // 处理设置窗口的IPC请求
+  ipcMain.handle('get-platform-info', (event) => {
+    console.log('收到设置窗口的平台信息请求');
+    const window = BrowserWindow.fromWebContents(event.sender);
+    if (window === settingsWindow) {
+      window.webContents.send('platform-info', {
+        isMac: isMac,
+        platform: process.platform
+      });
+    }
   });
 
   // 可选：打开开发者工具
