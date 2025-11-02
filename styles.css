@@ -125,63 +125,44 @@ body {
     display: flex;
 }
 
-/* 垂直分割线样式 */
-.vertical-line {
-    position: absolute;
-    left: 50%;
-    top: 0;
-    bottom: 0;
-    width: 4px;
-    background-color: #999ea3;
-    transform: translateX(-50%);
-    z-index: 10;
-    cursor: ew-resize;
-    transition: background-color 0.2s ease;
-}
-
-.vertical-line:hover {
-    background-color: #b8bfc4;
-    width: 6px;
-}
-
-.vertical-line.dragging {
-    background-color: #4a9eff;
-    width: 6px;
-}
-
 /* 主内容区域 */
 .main-content {
     display: flex;
-    height: 100vh;
+    height: calc(100vh - 120px);
     position: relative;
+    top: 60px;
 }
 
 /* 左侧面板 */
 .left-panel {
-    width: calc(50% - 2px);
-    height: calc(100% - 60px);
-    background-color: #1d2129;
-    position: absolute;
+    width: 60px;
+    height: calc(100vh - 120px); /* 减去顶栏和底栏高度 */
+    background-color: #2a2d35;
+    position: fixed;
     top: 60px;
     left: 0;
-    overflow: auto;
+    overflow: hidden;
+    z-index: 5;
 }
 
 /* 右侧面板 */
 .right-panel {
-    width: calc(50% - 2px);
-    height: calc(100% - 60px);
+    width: calc(100% - 60px);
+    height: calc(100vh - 120px); /* 减去顶栏和底栏高度 */
     background-color: #1d2129;
-    position: absolute;
+    position: fixed;
     top: 60px;
-    right: 0;
+    left: 60px;
     overflow: auto;
+    z-index: 5;
 }
 
 /* 面板内容 */
 .panel-content {
     padding: 20px;
     color: #ffffff;
+    height: 100%;
+    box-sizing: border-box;
 }
 
 .panel-content h3 {
@@ -212,7 +193,7 @@ body {
 .resize-handle-right {
     top: 60px;
     right: 0;
-    bottom: 5px;
+    bottom: 60px;
     width: 5px;
     cursor: ew-resize;
 }
@@ -325,4 +306,89 @@ body {
 
 .window-button .ripple {
     background-color: rgba(255, 255, 255, 0.4);
+}
+
+/* 底部状态栏 */
+.status-bar {
+    height: 60px;
+    background-color: #404245;
+    border-top: 2px solid #505255;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    display: flex;
+    align-items: center;
+    padding: 0 20px;
+    z-index: 5;
+}
+
+.status-spacer {
+    flex-grow: 1;
+}
+
+.status-text {
+    color: #ffffff;
+    font-size: 14px;
+    opacity: 0.8;
+}
+
+/* 底栏设置按钮样式 */
+.status-button {
+    width: 32px;
+    height: 32px;
+    border: none;
+    cursor: pointer;
+    background-color: rgba(255, 255, 255, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+.status-button:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+    transform: scale(1.1);
+}
+
+.status-button:active {
+    transform: scale(0.95);
+}
+
+.status-button .icon {
+    color: #ffffff;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    line-height: 1;
+    text-align: center;
+}
+
+/* 底栏设置按钮齿轮旋转动画 */
+.status-button.settings-btn .icon {
+    transition: transform 0.3s ease;
+}
+
+.status-button.settings-btn:hover .icon {
+    transform: rotate(90deg);
+}
+
+/* 底栏按钮水波纹效果 */
+.status-button .ripple {
+    background-color: rgba(255, 255, 255, 0.4);
+}
+
+/* 调整主内容区域高度以适配底部状态栏 */
+.left-panel {
+    height: calc(100% - 120px);
+}
+
+.right-panel {
+    height: calc(100% - 120px);
 }

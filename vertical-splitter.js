@@ -33,8 +33,14 @@ class VerticalSplitter {
         this.leftPanel = document.getElementById('leftPanel');
         this.rightPanel = document.getElementById('rightPanel');
 
-        if (!this.splitter || !this.leftPanel || !this.rightPanel) {
-            console.error('无法找到垂直分割线或面板元素');
+        // 如果分割线不存在，禁用拖拽功能
+        if (!this.splitter) {
+            console.log('垂直分割线元素不存在，拖拽功能已禁用');
+            return false;
+        }
+
+        if (!this.leftPanel || !this.rightPanel) {
+            console.error('无法找到面板元素');
             return false;
         }
 
@@ -96,9 +102,10 @@ class VerticalSplitter {
         const windowWidth = window.innerWidth;
         const initialLeft = windowWidth / 2;
 
-        // 设置分割线位置
+        // 设置分割线位置 (使用fixed定位，相对于视口)
         this.splitter.style.left = initialLeft + 'px';
-        this.splitter.style.top = '0px';
+        this.splitter.style.top = '60px';
+        this.splitter.style.bottom = '60px';
         this.splitter.style.transform = 'none';
 
         // 初始化面板
@@ -200,12 +207,15 @@ class VerticalSplitter {
         const splitterWidth = 4; // 分割线宽度
 
         // 更新左侧面板
-        this.leftPanel.style.width = (leftPosition - splitterWidth/2) + 'px';
+        const leftWidth = leftPosition - splitterWidth/2;
+        this.leftPanel.style.width = leftWidth + 'px';
         this.leftPanel.style.left = '0px';
 
         // 更新右侧面板
-        this.rightPanel.style.width = (windowWidth - leftPosition - splitterWidth/2) + 'px';
-        this.rightPanel.style.left = (leftPosition + splitterWidth/2) + 'px';
+        const rightWidth = windowWidth - leftPosition - splitterWidth/2;
+        const rightLeft = leftPosition + splitterWidth/2;
+        this.rightPanel.style.width = rightWidth + 'px';
+        this.rightPanel.style.left = rightLeft + 'px';
     }
 
     /**
@@ -213,6 +223,10 @@ class VerticalSplitter {
      */
     handleWindowResize() {
         if (this.isDragging) return;
+
+        // 重新计算分割线位置 (fixed定位)
+        this.splitter.style.top = '60px';
+        this.splitter.style.bottom = '60px';
 
         // 保持当前比例
         const currentLeft = parseInt(window.getComputedStyle(this.splitter).left) || 0;

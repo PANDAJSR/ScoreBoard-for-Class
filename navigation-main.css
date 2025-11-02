@@ -1,19 +1,16 @@
-/* 左侧导航栏（固定60px宽） */
+/* 左侧导航栏（固定宽度） */
 .left-nav {
     width: 60px;
-    height: calc(100% - 60px);
+    height: 100%;
     background-color: #2a2d35;
-    position: absolute;
-    top: 60px;
-    left: 0;
-    border-right: 1px solid #3a3d45;
+    position: relative;
     overflow-y: auto;
     overflow-x: hidden;
 }
 
 /* 导航内容 */
 .nav-content {
-    padding: 10px 5px;
+    padding: 15px 0;
     height: 100%;
     display: flex;
     flex-direction: column;
@@ -23,33 +20,36 @@
 /* 导航标题 */
 .nav-content h4 {
     color: #b8bfc4;
-    font-size: 14px;
+    font-size: 18px;
     font-weight: 600;
-    margin-bottom: 15px;
+    margin: 0 0 15px 0;
     text-align: center;
     padding: 8px 0;
-    border-bottom: 1px solid #3a3d45;
+    border-bottom: 2px solid #3a3d45;
     width: 100%;
+    letter-spacing: 1px;
 }
 
 /* 导航按钮容器 */
 .nav-buttons {
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 10px;
     width: 100%;
     align-items: center;
+    padding: 0;
+    box-sizing: border-box;
 }
 
 /* 导航按钮（圆形风格） */
 .nav-button {
-    width: 40px;
-    height: 40px;
+    width: 44px;
+    height: 44px;
     border-radius: 50%;
     border: none;
     background-color: rgba(255, 255, 255, 0.1);
     color: #b8bfc4;
-    font-size: 14px;
+    font-size: 18px;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -59,6 +59,7 @@
     position: relative;
     overflow: hidden;
     -webkit-app-region: no-drag;
+    box-sizing: border-box;
 }
 
 /* 导航按钮悬停效果 */
@@ -72,43 +73,11 @@
 .nav-button.active {
     background-color: #4a9eff;
     color: #ffffff;
-    transform: scale(1.05);
 }
 
 /* 导航按钮点击效果 */
 .nav-button:active {
     transform: scale(0.95);
-}
-
-/* 右侧内容区域 */
-.left-content {
-    margin-left: 60px;
-    height: calc(100% - 60px);
-    background-color: #1d2129;
-    position: relative;
-    overflow: hidden;
-}
-
-/* 内容头部 */
-.content-header {
-    padding: 20px;
-    border-bottom: 1px solid #3a3d45;
-    background-color: #252830;
-}
-
-.content-header h3 {
-    color: #ffffff;
-    font-size: 18px;
-    font-weight: 600;
-    margin: 0;
-}
-
-/* 内容主体 */
-.content-body {
-    padding: 20px;
-    height: calc(100% - 81px);
-    overflow-y: auto;
-    color: #b8bfc4;
 }
 
 /* 学生列表 */
@@ -202,23 +171,6 @@
 }
 
 .nav-buttons::-webkit-scrollbar-thumb:hover {
-    background: #5aa9ff;
-}
-
-.content-body::-webkit-scrollbar {
-    width: 8px;
-}
-
-.content-body::-webkit-scrollbar-track {
-    background: #1d2129;
-}
-
-.content-body::-webkit-scrollbar-thumb {
-    background: #4a9eff;
-    border-radius: 4px;
-}
-
-.content-body::-webkit-scrollbar-thumb:hover {
     background: #5aa9ff;
 }
 

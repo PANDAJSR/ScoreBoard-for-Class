@@ -6,7 +6,6 @@
 class LetterNavigation {
     constructor() {
         this.navButtons = document.getElementById('navButtons');
-        this.contentBody = document.getElementById('contentBody');
         this.students = this.getSampleStudents();
         this.currentLetter = null;
         this.init();
@@ -58,21 +57,6 @@ class LetterNavigation {
         this.navButtons.addEventListener('mousedown', (e) => {
             if (e.target.classList.contains('nav-button')) {
                 this.createRipple(e.target, e);
-            }
-        });
-
-        // 学生项目点击事件
-        this.contentBody.addEventListener('click', (e) => {
-            if (e.target.closest('.student-item')) {
-                this.handleStudentClick(e.target.closest('.student-item'));
-            }
-        });
-
-        // 学生项目鼠标按下事件 - 添加水波纹效果
-        this.contentBody.addEventListener('mousedown', (e) => {
-            const studentItem = e.target.closest('.student-item');
-            if (studentItem) {
-                this.createRipple(studentItem, e);
             }
         });
 
@@ -220,41 +204,31 @@ class LetterNavigation {
         const groups = window.electronAPI.groupStudentsByLetter(this.students);
         const studentList = groups[letter] || [];
 
-        this.contentBody.innerHTML = '';
+        // 由于我们移除了contentBody，现在只在控制台显示信息
+        console.log(`显示字母 ${letter} 的学生:`, studentList);
 
         if (studentList.length === 0) {
-            this.showEmptyState(letter);
+            console.log(`没有找到以 ${letter} 开头的学生`);
             return;
         }
 
-        this.renderStudentList(studentList, letter);
+        // 触发自定义事件，让其他模块处理显示逻辑
+        this.dispatchEvent('students-by-letter', {
+            letter,
+            students: studentList
+        });
     }
 
     /**
-     * 渲染学生列表
+     * 渲染学生列表（现在只在控制台显示）
      */
     renderStudentList(students, letter) {
-        const listContainer = document.createElement('div');
-        listContainer.className = 'student-list';
-
-        // 添加字母标题
-        const letterHeader = document.createElement('div');
-        letterHeader.className = 'letter-header';
-        letterHeader.innerHTML = `
-            <h4>${letter}</h4>
-            <span class="student-count">${students.length} 名学生</span>
-        `;
-        listContainer.appendChild(letterHeader);
-
-        // 创建学生项目
-        students.forEach(student => {
-            const studentItem = this.createStudentItem(student);
-            listContainer.appendChild(studentItem);
+        console.log(`字母 ${letter} 的学生列表:`);
+        students.forEach((student, index) => {
+            console.log(`  ${index + 1}. ${student}`);
         });
 
-        this.contentBody.appendChild(listContainer);
-
-        // 触发自定义事件
+        // 触发自定义事件，让其他模块处理显示逻辑
         this.dispatchEvent('students-rendered', {
             letter,
             count: students.length,
@@ -290,16 +264,16 @@ class LetterNavigation {
     }
 
     /**
-     * 显示空状态
+     * 显示空状态（现在只在控制台显示）
      */
     showEmptyState(letter) {
-        this.contentBody.innerHTML = `
-            <div class="no-students">
-                <div class="empty-icon">🔍</div>
-                <p>没有找到以 <strong>${letter}</strong> 开头的学生</p>
-                <small>试试其他字母或添加新的学生</small>
-            </div>
-        `;
+        console.log(`没有找到以 ${letter} 开头的学生`);
+
+        // 触发自定义事件，让其他模块处理显示逻辑
+        this.dispatchEvent('empty-state', {
+            letter,
+            message: `没有找到以 ${letter} 开头的学生`
+        });
     }
 
     /**
@@ -399,12 +373,10 @@ class LetterNavigation {
     destroy() {
         // 移除事件监听器
         this.navButtons.removeEventListener('click', this.handleNavButtonClick);
-        this.contentBody.removeEventListener('click', this.handleStudentClick);
         document.removeEventListener('keydown', this.handleKeyboardNavigation);
 
         // 清空内容
         this.navButtons.innerHTML = '';
-        this.contentBody.innerHTML = '';
 
         // 重置状态
         this.currentLetter = null;

@@ -327,10 +327,7 @@
             // 获取关闭按钮元素
             closeBtn = document.getElementById('closeBtn');
             if (closeBtn) {
-                console.log('设置界面 - 关闭按钮已找到');
                 bindCloseButtonEvents(); // 绑定关闭按钮事件
-            } else {
-                console.error('设置界面 - 找不到关闭按钮');
             }
 
             loadStudents(); // 加载学生数据
@@ -363,133 +360,50 @@
         function detectPlatform() {
             const titleBar = document.getElementById('titleBar');
             const closeBtn = document.getElementById('closeBtn');
-            console.log('设置界面 - 开始平台检测，titleBar:', titleBar, 'closeBtn:', closeBtn);
-
-            // 立即检查当前样式状态
-            if (titleBar) {
-                console.log('设置界面 - titleBar初始样式类:', titleBar.className);
-                console.log('设置界面 - titleBar计算样式:', window.getComputedStyle(titleBar));
-            }
-            if (closeBtn) {
-                console.log('设置界面 - closeBtn初始样式类:', closeBtn.className);
-                console.log('设置界面 - closeBtn计算样式:', window.getComputedStyle(closeBtn));
-                console.log('设置界面 - closeBtn位置:', {
-                    top: closeBtn.offsetTop,
-                    left: closeBtn.offsetLeft,
-                    right: window.getComputedStyle(closeBtn).right
-                });
-            }
 
             // 强制应用Windows样式（用于测试和确保正确显示）
             if (titleBar) {
                 titleBar.classList.remove('mac', 'other');
                 titleBar.classList.add('other');
-                console.log('设置界面 - 强制应用Windows样式（other）');
-                console.log('设置界面 - 应用后样式类:', titleBar.className);
 
                 // 直接设置按钮样式作为后备方案
                 if (closeBtn) {
-                    console.log('设置界面 - 直接设置按钮样式');
                     closeBtn.style.position = 'absolute';
                     closeBtn.style.top = '14px';
                     closeBtn.style.right = '16px';
                     closeBtn.style.left = 'auto';
-                    console.log('设置界面 - 直接样式设置完成');
                 }
-
-                // 立即检查样式应用结果
-                setTimeout(() => {
-                    console.log('设置界面 - 延迟检查样式应用结果:');
-                    if (closeBtn) {
-                        const computedStyle = window.getComputedStyle(closeBtn);
-                        console.log('设置界面 - closeBtn最终计算样式:', {
-                            position: computedStyle.position,
-                            top: computedStyle.top,
-                            right: computedStyle.right,
-                            left: computedStyle.left,
-                            offsetTop: closeBtn.offsetTop,
-                            offsetLeft: closeBtn.offsetLeft,
-                            offsetWidth: closeBtn.offsetWidth,
-                            offsetHeight: closeBtn.offsetHeight
-                        });
-
-                        // 检查按钮实际位置
-                        const rect = closeBtn.getBoundingClientRect();
-                        console.log('设置界面 - closeBtn实际位置:', {
-                            x: rect.x,
-                            y: rect.y,
-                            width: rect.width,
-                            height: rect.height,
-                            right: rect.right,
-                            bottom: rect.bottom
-                        });
-
-                        // 检查标题栏位置
-                        const titleBarRect = titleBar.getBoundingClientRect();
-                        console.log('设置界面 - titleBar位置:', {
-                            x: titleBarRect.x,
-                            y: titleBarRect.y,
-                            width: titleBarRect.width,
-                            height: titleBarRect.height,
-                            right: titleBarRect.right
-                        });
-
-                        // 判断按钮是否在正确位置
-                        const expectedRight = 16; // 期望的右边距
-                        const actualRight = titleBarRect.width - (closeBtn.offsetLeft + closeBtn.offsetWidth);
-                        console.log('设置界面 - 右边距检查:', {
-                            expectedRight: expectedRight,
-                            actualRight: actualRight,
-                            isCorrectPosition: actualRight <= expectedRight + 5 && actualRight >= expectedRight - 5
-                        });
-                    }
-                }, 100);
             }
 
             if (window.electronAPI && window.electronAPI.onPlatformInfo) {
-                console.log('设置界面 - electronAPI可用');
-
                 window.electronAPI.onPlatformInfo((data) => {
-                    console.log('设置界面 - 收到平台信息:', data);
-
                     if (titleBar) {
                         // 清除之前的类
                         titleBar.classList.remove('mac', 'other');
 
                         if (data.isMac) {
                             titleBar.classList.add('mac');
-                            console.log('设置界面 - 应用了macOS样式');
                         } else {
                             titleBar.classList.add('other');
-                            console.log('设置界面 - 应用了非macOS样式');
-                        }
 
-                        // 检查应用的样式
-                        console.log('设置界面 - 当前样式类:', titleBar.className);
-                        console.log('设置界面 - 按钮位置样式:');
-                        console.log('- mac样式下按钮应在左边');
-                        console.log('- other样式下按钮应在右边');
-                    } else {
-                        console.error('设置界面 - 找不到titleBar元素');
+                            // 确保关闭按钮位置正确
+                            if (closeBtn) {
+                                closeBtn.style.position = 'absolute';
+                                closeBtn.style.top = '16px';
+                                closeBtn.style.right = '16px';
+                            }
+                        }
                     }
                 });
 
                 // 请求平台信息
                 if (window.electronAPI.getPlatformInfo) {
-                    console.log('设置界面 - 请求平台信息');
                     window.electronAPI.getPlatformInfo();
-                } else {
-                    console.warn('设置界面 - getPlatformInfo方法不可用');
                 }
             } else {
                 // 默认使用非macOS样式（Windows）
-                console.log('设置界面 - electronAPI不可用，使用默认Windows样式');
                 if (titleBar) {
                     titleBar.classList.add('other');
-                    console.log('设置界面 - 默认应用非macOS样式');
-                    console.log('设置界面 - 当前样式类:', titleBar.className);
-                } else {
-                    console.error('设置界面 - 找不到titleBar元素');
                 }
             }
         }
