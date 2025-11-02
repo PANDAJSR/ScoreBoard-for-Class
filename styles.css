@@ -357,6 +357,45 @@ body {
     opacity: 0.8;
 }
 
+/* 班级按钮（胶囊形状） */
+.class-button {
+    height: 36px;
+    padding: 0 16px;
+    border: none;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 18px; /* 圆角超大，形成胶囊形状 */
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-right: auto; /* 推到最左侧 */
+    -webkit-app-region: no-drag;
+}
+
+.class-button:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+.class-button-content {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    height: 100%;
+}
+
+/* 班级图标 */
+.class-button .fa-users {
+    font-size: 16px;
+    color: #ffffff;
+    opacity: 0.9;
+}
+
+/* 班级名称 */
+.class-name {
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: 500;
+    white-space: nowrap;
+}
+
 /* 底栏设置按钮样式 */
 .status-button {
     width: 32px;

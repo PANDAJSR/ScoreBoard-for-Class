@@ -19,14 +19,10 @@
         <div class="title-text">ScoreBoard</div>
         <div class="window-controls">
             <button class="window-button minimize-btn" id="minimizeBtn" title="最小化">
-                <svg viewBox="0 0 16 16">
-                    <path d="M14 8v1H3V8h11z" fill-rule="evenodd"></path>
-                </svg>
+                <i class="fas fa-window-minimize"></i>
             </button>
             <button class="window-button close-btn" id="closeBtn" title="关闭">
-                <svg viewBox="0 0 16 16">
-                    <path d="M7.47 8l3.22 3.22a.75.75 0 11-1.06 1.06L6.4 9.06 3.18 12.28a.75.75 0 01-1.06-1.06L5.34 8 2.12 4.78a.75.75 0 011.06-1.06L6.4 6.94 9.62 3.72a.75.75 0 011.06 1.06L7.46 8z" fill-rule="evenodd"></path>
-                </svg>
+                <i class="fas fa-times"></i>
             </button>
         </div>
     </div>
@@ -59,9 +55,18 @@
 
     <!-- 底部状态栏 -->
     <div class="status-bar">
+        <!-- 班级按钮（胶囊形状） -->
+        <button class="class-button" id="classBtn" title="班级">
+            <div class="class-button-content">
+                <!-- 班级图标 -->
+                <i class="fas fa-users"></i>
+                <!-- 班级名称 -->
+                <span class="class-name">高二(3)班</span>
+            </div>
+        </button>
         <div class="status-spacer"></div>
         <button class="status-button settings-btn" id="settingsBtn" title="设置">
-            <span class="icon">⚙</span>
+            <i class="fas fa-cog"></i>
         </button>
     </div>
 
