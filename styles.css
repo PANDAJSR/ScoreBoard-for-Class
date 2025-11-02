@@ -261,6 +261,12 @@ body {
     height: 100% !important;
 }
 
+/* 最小化图标特殊居中处理 */
+.window-button .fa-window-minimize {
+    position: relative;
+    top: -1px; /* 微调位置使其视觉居中 */
+}
+
 /* 调试：检查图标是否正确加载 */
 .window-button::before {
     content: "";
@@ -433,12 +439,23 @@ body {
     text-align: center;
 }
 
+/* Font Awesome 图标样式 */
+.status-button .fas {
+    color: #ffffff !important;
+    font-size: 16px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 100% !important;
+    height: 100% !important;
+}
+
 /* 底栏设置按钮齿轮旋转动画 */
-.status-button.settings-btn .icon {
+.status-button.settings-btn .fas {
     transition: transform 0.3s ease;
 }
 
-.status-button.settings-btn:hover .icon {
+.status-button.settings-btn:hover .fas {
     transform: rotate(90deg);
 }
 
