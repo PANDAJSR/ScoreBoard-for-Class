@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; font-src 'self' https://cdnjs.cloudflare.com; img-src 'self' data:;">
+    <title>班级管理</title>
+
+    <!-- Font Awesome 图标字体 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- 样式文件 -->
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="class-management.css">
+</head>
+<body>
+    <!-- 标题栏 -->
+    <div class="title-bar" id="titleBar">
+        <div class="title-text">班级管理</div>
+        <div class="window-controls">
+            <button class="window-button close-btn" id="closeBtn" title="关闭">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- 主内容区域 -->
+    <div class="class-management-content">
+        <h3>班级信息管理</h3>
+        <p>这里可以管理班级相关信息</p>
+
+        <div class="class-info">
+            <label>班级名称：</label>
+            <input type="text" id="classNameInput" value="高二(3)班" placeholder="请输入班级名称">
+        </div>
+
+        <div class="class-actions">
+            <button class="save-btn" id="saveBtn">保存</button>
+            <button class="cancel-btn" id="cancelBtn">取消</button>
+        </div>
+    </div>
+
+    <!-- JavaScript 文件 -->
+    <script src="class-management.js"></script>
+</body>
+</html>

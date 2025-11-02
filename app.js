@@ -137,7 +137,11 @@ class ScoreBoardApp {
 
         // 错误事件
         window.addEventListener('error', (e) => {
-            this.handleError(e.error);
+            if (e.error) {
+                this.handleError(e.error);
+            } else {
+                this.handleError(new Error(e.message || '未知错误'));
+            }
         });
 
         // 未处理的Promise拒绝
@@ -217,6 +221,22 @@ class ScoreBoardApp {
                 }, 200);
             });
         }
+
+        // 班级按钮事件绑定
+        const classBtn = document.getElementById('classBtn');
+        if (classBtn) {
+            // 鼠标按下时创建水波纹
+            classBtn.addEventListener('mousedown', (e) => {
+                this.createRipple(classBtn, e);
+            });
+
+            // 点击时打开班级管理窗口
+            classBtn.addEventListener('click', (e) => {
+                setTimeout(() => {
+                    this.openClassManagement();
+                }, 200);
+            });
+        }
     }
 
     /**
@@ -240,6 +260,40 @@ class ScoreBoardApp {
         setTimeout(() => {
             ripple.remove();
         }, 600);
+    }
+
+    /**
+     * 打开班级管理窗口
+     */
+    openClassManagement() {
+        if (window.electronAPI && window.electronAPI.openClassManagement) {
+            // Electron环境：创建无边框窗口
+            window.electronAPI.openClassManagement({
+                width: 500,
+                height: 400,
+                frame: false, // 无边框
+                resizable: false,
+                minimizable: false,
+                maximizable: false
+            });
+        } else {
+            console.log('班级管理功能需要Electron环境');
+            // 浏览器环境：尝试创建无边框窗口（可能不支持）
+            try {
+                const classWindow = window.open(
+                    'class-management.html',
+                    'classManagement',
+                    'width=500,height=400,frame=no,menubar=no,toolbar=no,location=no,status=no'
+                );
+                if (classWindow) {
+                    console.log('已打开班级管理窗口');
+                } else {
+                    console.error('无法打开班级管理窗口，可能被浏览器拦截');
+                }
+            } catch (error) {
+                console.error('创建无边框窗口失败:', error);
+            }
+        }
     }
 
 
@@ -278,10 +332,11 @@ class ScoreBoardApp {
         // 创建错误通知元素
         const notification = document.createElement('div');
         notification.className = 'error-notification';
+        const errorMessage = error && error.message ? error.message : '未知错误';
         notification.innerHTML = `
             <div class="error-content">
                 <strong>发生错误</strong>
-                <p>${error.message}</p>
+                <p>${errorMessage}</p>
                 <button class="close-btn">×</button>
             </div>
         `;

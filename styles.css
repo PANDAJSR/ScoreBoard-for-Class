@@ -374,6 +374,8 @@ body {
     transition: all 0.3s ease;
     margin-right: auto; /* 推到最左侧 */
     -webkit-app-region: no-drag;
+    position: relative; /* 为子元素定位提供参考 */
+    overflow: hidden; /* 限制水波纹在按钮内部 */
 }
 
 .class-button:hover {

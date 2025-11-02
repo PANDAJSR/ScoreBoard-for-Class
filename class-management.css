@@ -1,0 +1,155 @@
+/* 班级管理窗口样式 */
+.class-management-content {
+    padding: 20px;
+    color: #ffffff;
+    height: calc(100vh - 60px); /* 减去标题栏高度 */
+    box-sizing: border-box;
+    background-color: #1d2129;
+}
+
+.class-management-content h3 {
+    margin: 0 0 20px 0;
+    color: #ffffff;
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.class-management-content p {
+    margin: 0 0 20px 0;
+    color: #b8bfc4;
+    font-size: 14px;
+}
+
+/* 班级信息输入区域 */
+.class-info {
+    margin-bottom: 20px;
+}
+
+.class-info label {
+    display: block;
+    margin-bottom: 8px;
+    color: #b8bfc4;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.class-info input {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #505255;
+    border-radius: 6px;
+    background-color: #2a2d35;
+    color: #ffffff;
+    font-size: 14px;
+    box-sizing: border-box;
+    transition: border-color 0.3s ease;
+}
+
+.class-info input:focus {
+    outline: none;
+    border-color: #4a9eff;
+}
+
+/* 操作按钮区域 */
+.class-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+}
+
+.save-btn, .cancel-btn {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    -webkit-app-region: no-drag;
+}
+
+.save-btn {
+    background-color: #4a9eff;
+    color: #ffffff;
+}
+
+.save-btn:hover {
+    background-color: #5aa9ff;
+}
+
+.cancel-btn {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: #b8bfc4;
+}
+
+.cancel-btn:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+    color: #ffffff;
+}
+
+/* 按钮点击效果 */
+.save-btn:active, .cancel-btn:active {
+    transform: scale(0.95);
+}
+
+/* 按钮水波纹效果 */
+.save-btn .ripple, .cancel-btn .ripple {
+    background-color: rgba(255, 255, 255, 0.3);
+}
+
+/* 确保标题栏样式一致 */
+.class-management-window .title-bar {
+    background-color: #404245;
+    border-bottom: 2px solid #505255;
+}
+
+.class-management-window .title-text {
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+/* 窗口控制按钮样式（只显示关闭按钮） */
+.class-management-window .window-controls {
+    display: flex;
+    gap: 8px;
+}
+
+.class-management-window .window-button {
+    width: 32px;
+    height: 32px;
+    border: none;
+    border-radius: 50%;
+    background-color: transparent;
+    cursor: pointer;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.2s ease;
+    -webkit-app-region: no-drag;
+}
+
+.class-management-window .window-button:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.class-management-window .window-button .fas {
+    color: #ffffff !important;
+    font-size: 14px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 100% !important;
+    height: 100% !important;
+}
+
+/* 关闭按钮特殊样式 */
+.class-management-window .window-button.close-btn:hover {
+    background-color: #e81123;
+}
+
+/* 关闭按钮水波纹效果 */
+.class-management-window .window-button .ripple {
+    background-color: rgba(255, 255, 255, 0.4);
+}
