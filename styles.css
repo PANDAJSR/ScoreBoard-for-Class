@@ -125,6 +125,30 @@ body {
     display: flex;
 }
 
+/* 垂直分割线样式 */
+.vertical-line {
+    position: fixed;
+    left: 50%;
+    top: 60px;
+    bottom: 60px;
+    width: 4px;
+    background-color: #999ea3;
+    transform: translateX(-50%);
+    z-index: 10;
+    cursor: ew-resize;
+    transition: background-color 0.2s ease;
+}
+
+.vertical-line:hover {
+    background-color: #b8bfc4;
+    width: 6px;
+}
+
+.vertical-line.dragging {
+    background-color: #4a9eff;
+    width: 6px;
+}
+
 /* 主内容区域 */
 .main-content {
     display: flex;
@@ -135,24 +159,24 @@ body {
 
 /* 左侧面板 */
 .left-panel {
-    width: 60px;
+    width: calc(50% - 2px);
     height: calc(100vh - 120px); /* 减去顶栏和底栏高度 */
-    background-color: #2a2d35;
+    background-color: #1d2129;
     position: fixed;
     top: 60px;
     left: 0;
-    overflow: hidden;
+    overflow: auto;
     z-index: 5;
 }
 
 /* 右侧面板 */
 .right-panel {
-    width: calc(100% - 60px);
+    width: calc(50% - 2px);
     height: calc(100vh - 120px); /* 减去顶栏和底栏高度 */
     background-color: #1d2129;
     position: fixed;
     top: 60px;
-    left: 60px;
+    right: 0;
     overflow: auto;
     z-index: 5;
 }

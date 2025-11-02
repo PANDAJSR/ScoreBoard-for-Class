@@ -17,19 +17,6 @@
     align-items: center;
 }
 
-/* 导航标题 */
-.nav-content h4 {
-    color: #b8bfc4;
-    font-size: 18px;
-    font-weight: 600;
-    margin: 0 0 15px 0;
-    text-align: center;
-    padding: 8px 0;
-    border-bottom: 2px solid #3a3d45;
-    width: 100%;
-    letter-spacing: 1px;
-}
-
 /* 导航按钮容器 */
 .nav-buttons {
     display: flex;
