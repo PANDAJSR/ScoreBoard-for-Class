@@ -1,0 +1,301 @@
+/* 设置页面样式 */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background-color: #1d2129;
+    height: 100vh;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    color: #ffffff;
+    position: relative;
+    overflow: hidden;
+}
+
+/* 可拖动的标题栏 */
+.title-bar {
+    height: 60px;
+    background-color: #404245;
+    -webkit-app-region: drag;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+.title-text {
+    color: #ffffff;
+    font-size: 20px;
+    font-weight: 600;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+/* 平台特定样式 */
+.title-bar.mac .title-text {
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.title-bar.other .title-text {
+    left: 16px;
+    transform: none;
+}
+
+.title-bar.other .close-button {
+    right: 16px;
+}
+
+.title-bar.mac .close-button {
+    left: 16px;
+    right: auto;
+}
+
+/* 关闭按钮 */
+.close-button {
+    position: absolute;
+    top: 14px;
+    right: 16px;
+    width: 32px;
+    height: 32px;
+    border: none;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    -webkit-app-region: no-drag;
+    z-index: 10;
+    line-height: 1;
+    padding: 0;
+    overflow: hidden;
+}
+
+.close-button:hover {
+    background-color: rgba(255, 255, 255, 0.3);
+    transform: scale(1.1);
+}
+
+.close-button:active {
+    transform: scale(0.95);
+}
+
+.close-button svg {
+    width: 16px;
+    height: 16px;
+    fill: #ffffff;
+    opacity: 0.9;
+    transition: opacity 0.2s;
+    display: block;
+    margin: auto;
+}
+
+.close-button:hover svg {
+    opacity: 1;
+}
+
+/* 水波纹效果 */
+.ripple {
+    position: absolute;
+    border-radius: 50%;
+    background-color: rgba(255, 255, 255, 0.6);
+    transform: scale(0);
+    animation: ripple-animation 0.6s ease-out;
+    z-index: 1;
+    pointer-events: none;
+}
+
+@keyframes ripple-animation {
+    to {
+        transform: scale(4);
+        opacity: 0;
+    }
+}
+
+.close-button {
+    position: relative;
+    overflow: hidden;
+}
+
+/* 内容区域 */
+.settings-container {
+    padding: 20px;
+    text-align: center;
+    min-height: calc(100vh - 60px);
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+}
+
+.settings-content {
+    max-width: 500px;
+    margin: 0 auto;
+    width: 100%;
+}
+
+.settings-section {
+    background-color: #2a2d35;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
+    text-align: left;
+}
+
+.section-title {
+    color: #ffffff;
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-label {
+    display: block;
+    color: #b8b9ba;
+    font-size: 14px;
+    margin-bottom: 8px;
+    font-weight: 500;
+}
+
+.form-input {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #505255;
+    border-radius: 6px;
+    background-color: #1d2129;
+    color: #ffffff;
+    font-size: 14px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.form-input:focus {
+    border-color: #4a90e2;
+}
+
+.form-input:disabled {
+    background-color: #404245;
+    color: #999ea3;
+    cursor: not-allowed;
+}
+
+.form-hint {
+    color: #999ea3;
+    font-size: 12px;
+    margin-top: 6px;
+    line-height: 1.4;
+}
+
+.form-hint.error {
+    color: #ff4d4f;
+}
+
+.form-hint.success {
+    color: #52c41a;
+}
+
+.button-group {
+    display: flex;
+    gap: 12px;
+    margin-top: 15px;
+}
+
+.btn {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.btn-primary {
+    background-color: #4a90e2;
+    color: #ffffff;
+}
+
+.btn-primary:hover:not(:disabled) {
+    background-color: #357abd;
+    transform: translateY(-1px);
+}
+
+.btn-secondary {
+    background-color: #505255;
+    color: #ffffff;
+}
+
+.btn-secondary:hover:not(:disabled) {
+    background-color: #606265;
+    transform: translateY(-1px);
+}
+
+.btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.directory-display {
+    background-color: #1d2129;
+    border: 1px solid #505255;
+    border-radius: 6px;
+    padding: 10px 12px;
+    font-size: 14px;
+    color: #ffffff;
+    word-break: break-all;
+    min-height: 40px;
+    display: flex;
+    align-items: center;
+}
+
+.placeholder-text {
+    color: #999ea3;
+    font-size: 14px;
+    line-height: 1.6;
+    text-align: center;
+    margin-top: 20px;
+}
+
+.settings-hint {
+    color: #b8b9ba;
+    font-size: 12px;
+    margin-top: 20px;
+    line-height: 1.4;
+    text-align: center;
+}
+
+.feature-list {
+    text-align: left;
+    margin: 20px 0;
+}
+
+.feature-item {
+    display: flex;
+    align-items: center;
+    margin: 8px 0;
+    color: #b8b9ba;
+    font-size: 13px;
+}
+
+.feature-item i {
+    color: #4a90e2;
+    margin-right: 8px;
+    width: 16px;
+}

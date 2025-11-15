@@ -1,14 +1,29 @@
 /**
  * 主应用初始化模块
- * 负责初始化所有功能模块
+ * 负责初始化所有功能模块，重构版本
  */
+
+const WindowManager = require('./app-window-manager.js');
+const NavigationManager = require('./app-navigation-manager.js');
+const ErrorHandler = require('./app-error-handler.js');
+const ClassManager = require('./app-class-manager.js');
+const {
+    getStatus,
+    dispatchEvent,
+    waitForDOM,
+    detectPlatform,
+    logger,
+    storage
+} = require('./app-utils.js');
 
 class ScoreBoardApp {
     constructor() {
-        this.navigation = null;
-        this.windowResize = null;
-        this.verticalSplitter = null;
+        this.windowManager = null;
+        this.navigationManager = null;
+        this.errorHandler = null;
+        this.classManager = null;
         this.isInitialized = false;
+        this.globalEventsBound = false;
         this.init();
     }
 
@@ -17,428 +32,210 @@ class ScoreBoardApp {
      */
     init() {
         // 等待DOM加载完成
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', () => this.initialize());
-        } else {
+        waitForDOM().then(() => {
             this.initialize();
-        }
+        }).catch(error => {
+            console.error('等待DOM加载失败:', error);
+            this.handleInitializationError(error);
+        });
     }
 
     /**
      * 初始化所有功能模块
      */
-    initialize() {
+    async initialize() {
         try {
-            // 1. 初始化窗口调整大小功能
-            this.initWindowResize();
+            logger.info('开始初始化应用模块');
 
-            // 2. 初始化垂直分割线拖拽功能
-            this.initVerticalSplitter();
+            // 1. 初始化错误处理器
+            this.errorHandler = new ErrorHandler();
+            this.errorHandler.setupErrorHandling();
 
-            // 3. 初始化首字母导航功能
-            this.initLetterNavigation();
+            // 2. 初始化窗口管理器
+            this.windowManager = new WindowManager();
+            this.windowManager.initWindowResize();
+            this.windowManager.initVerticalSplitter();
 
-            // 4. 绑定全局事件
+            // 3. 初始化导航管理器
+            this.navigationManager = new NavigationManager();
+            this.navigationManager.initLetterNavigation();
+
+            // 4. 初始化班级管理器
+            this.classManager = new ClassManager();
+            this.classManager.bindClassButtonEvents();
+            this.classManager.bindStudentSelectEvents();
+
+            // 5. 绑定全局事件
             this.bindGlobalEvents();
 
-            // 5. 设置全局错误处理
-            this.setupErrorHandling();
+            // 6. 处理平台信息
+            this.handlePlatformInfo();
 
             this.isInitialized = true;
+            this.globalEventsBound = true;
+
+            logger.info('应用模块初始化完成');
 
             // 触发自定义事件
-            this.dispatchEvent('app-initialized');
+            dispatchEvent('app-initialized');
 
         } catch (error) {
-            console.error('应用初始化失败:', error);
-            this.handleInitializationError(error);
+            logger.error('应用初始化失败:', error);
+            this.errorHandler.handleInitializationError(error);
         }
-    }
-
-    /**
-     * 初始化窗口调整大小功能
-     */
-    initWindowResize() {
-        this.windowResize = new WindowResize();
-
-        // 监听窗口大小变化事件
-        document.addEventListener('resize', (e) => {
-            // 窗口大小改变处理
-        });
-
-        document.addEventListener('resize-start', (e) => {
-            // 开始调整窗口大小处理
-        });
-
-        document.addEventListener('resize-end', (e) => {
-            // 完成调整窗口大小处理
-        });
-    }
-
-    /**
-     * 初始化垂直分割线拖拽功能
-     */
-    initVerticalSplitter() {
-        this.verticalSplitter = new VerticalSplitter({
-            minSideWidth: 150,
-            onChange: (data) => {
-                // 分割线位置改变处理
-            }
-        });
-
-        // 监听分割线拖拽事件
-        document.addEventListener('drag-start', (e) => {
-            // 拖拽开始事件处理
-        });
-
-        document.addEventListener('drag', (e) => {
-            // 实时更新可以在这里处理
-        });
-
-        document.addEventListener('drag-end', (e) => {
-            // 拖拽结束事件处理
-        });
-    }
-
-    /**
-     * 初始化首字母导航功能
-     */
-    initLetterNavigation() {
-        this.navigation = new LetterNavigation();
-
-        // 监听导航事件
-        document.addEventListener('letter-changed', (e) => {
-            // 字母切换处理
-        });
-
-        document.addEventListener('student-selected', (e) => {
-            // 学生选中处理
-        });
-
-        document.addEventListener('students-rendered', (e) => {
-            // 学生列表渲染完成处理
-        });
     }
 
     /**
      * 绑定全局事件
      */
     bindGlobalEvents() {
-        // 平台信息事件
-        window.electronAPI.onPlatformInfo((data) => {
-            console.log('平台信息:', data);
-            this.handlePlatformInfo(data);
-        });
-
-        // 窗口事件
-        window.addEventListener('beforeunload', () => {
-            this.cleanup();
-        });
-
-        // 错误事件
-        window.addEventListener('error', (e) => {
-            if (e.error) {
-                this.handleError(e.error);
-            } else {
-                this.handleError(new Error(e.message || '未知错误'));
+        // 监听平台信息事件
+        window.addEventListener('platform-info', (e) => {
+            if (this.classManager) {
+                this.classManager.handlePlatformInfo(e.detail);
             }
         });
 
-        // 未处理的Promise拒绝
-        window.addEventListener('unhandledrejection', (e) => {
-            this.handleError(e.reason);
+        // 监听班级变更事件
+        window.addEventListener('class-changed', (e) => {
+            logger.info('班级已变更:', e.detail);
+            // 重新加载学生数据
+            this.reloadStudentData();
         });
 
-        console.log('🔗 全局事件绑定完成');
+        // 监听学生选择事件
+        window.addEventListener('student-selected', (e) => {
+            logger.info('学生已选择:', e.detail);
+            // 处理学生选择逻辑
+            this.handleStudentSelection(e.detail);
+        });
+
+        // 监听窗口大小变化事件
+        window.addEventListener('window-resized', (e) => {
+            logger.debug('窗口大小已改变:', e.detail);
+            // 处理窗口大小变化
+            this.handleWindowResize(e.detail);
+        });
+
+        // 监听字母导航事件
+        window.addEventListener('letter-change', (e) => {
+            if (this.navigationManager) {
+                this.navigationManager.handleLetterChange(e);
+            }
+        });
+
+        // 监听应用错误事件
+        window.addEventListener('app-error', (e) => {
+            logger.error('应用错误:', e.detail);
+        });
+
+        logger.info('全局事件绑定完成');
     }
 
     /**
      * 处理平台信息
      */
-    handlePlatformInfo(data) {
-        const titleBar = document.getElementById('titleBar');
-        if (titleBar) {
-            if (data.isMac) {
-                titleBar.classList.add('mac');
-            } else {
-                titleBar.classList.add('other');
+    handlePlatformInfo() {
+        // 检测平台信息
+        const platform = detectPlatform();
 
-                // 绑定窗口控制按钮事件
-                this.bindWindowControls();
+        // 触发平台信息事件
+        dispatchEvent('platform-info', platform);
+
+        logger.info('平台信息:', platform);
+    }
+
+    /**
+     * 重新加载学生数据
+     */
+    async reloadStudentData() {
+        try {
+            logger.info('重新加载学生数据');
+            // 这里可以添加具体的学生数据加载逻辑
+
+            // 更新导航状态
+            if (this.navigationManager) {
+                this.navigationManager.updateLetterNavigationStatus();
             }
-        }
 
-        // 触发自定义事件
-        this.dispatchEvent('platform-detected', data);
-    }
-
-    /**
-     * 绑定窗口控制按钮事件
-     */
-    bindWindowControls() {
-        const minimizeBtn = document.getElementById('minimizeBtn');
-        const closeBtn = document.getElementById('closeBtn');
-        const settingsBtn = document.getElementById('settingsBtn');
-
-        if (minimizeBtn) {
-            // 鼠标按下时创建水波纹
-            minimizeBtn.addEventListener('mousedown', (e) => {
-                this.createRipple(minimizeBtn, e);
-            });
-
-            // 点击时执行功能
-            minimizeBtn.addEventListener('click', (e) => {
-                setTimeout(() => {
-                    window.electronAPI.minimizeWindow();
-                }, 200);
-            });
-        }
-
-        if (closeBtn) {
-            // 鼠标按下时创建水波纹
-            closeBtn.addEventListener('mousedown', (e) => {
-                this.createRipple(closeBtn, e);
-            });
-
-            // 点击时执行功能
-            closeBtn.addEventListener('click', (e) => {
-                setTimeout(() => {
-                    window.electronAPI.closeWindow();
-                }, 200);
-            });
-        }
-
-        if (settingsBtn) {
-            // 鼠标按下时创建水波纹
-            settingsBtn.addEventListener('mousedown', (e) => {
-                this.createRipple(settingsBtn, e);
-            });
-
-            // 点击时执行功能
-            settingsBtn.addEventListener('click', (e) => {
-                setTimeout(() => {
-                    window.electronAPI.openSettings();
-                }, 200);
-            });
-        }
-
-        // 班级按钮事件绑定
-        const classBtn = document.getElementById('classBtn');
-        if (classBtn) {
-            // 鼠标按下时创建水波纹
-            classBtn.addEventListener('mousedown', (e) => {
-                this.createRipple(classBtn, e);
-            });
-
-            // 点击时打开班级管理窗口
-            classBtn.addEventListener('click', (e) => {
-                setTimeout(() => {
-                    this.openClassManagement();
-                }, 200);
-            });
+        } catch (error) {
+            logger.error('重新加载学生数据失败:', error);
         }
     }
 
     /**
-     * 创建水波纹效果
+     * 处理学生选择
      */
-    createRipple(button, event) {
-        const ripple = document.createElement('span');
-        ripple.className = 'ripple';
-
-        const rect = button.getBoundingClientRect();
-        const size = Math.max(rect.width, rect.height);
-        const x = event.clientX - rect.left - size / 2;
-        const y = event.clientY - rect.top - size / 2;
-
-        ripple.style.width = ripple.style.height = size + 'px';
-        ripple.style.left = x + 'px';
-        ripple.style.top = y + 'px';
-
-        button.appendChild(ripple);
-
-        setTimeout(() => {
-            ripple.remove();
-        }, 600);
+    handleStudentSelection(studentInfo) {
+        // 这里可以添加具体的学生选择处理逻辑
+        logger.info('处理学生选择:', studentInfo);
     }
 
     /**
-     * 打开班级管理窗口
+     * 处理窗口大小变化
      */
-    openClassManagement() {
-        if (window.electronAPI && window.electronAPI.openClassManagement) {
-            // Electron环境：创建无边框窗口
-            window.electronAPI.openClassManagement({
-                width: 500,
-                height: 400,
-                frame: false, // 无边框
-                resizable: false,
-                minimizable: false,
-                maximizable: false
-            });
-        } else {
-            console.log('班级管理功能需要Electron环境');
-            // 浏览器环境：尝试创建无边框窗口（可能不支持）
-            try {
-                const classWindow = window.open(
-                    'class-management.html',
-                    'classManagement',
-                    'width=500,height=400,frame=no,menubar=no,toolbar=no,location=no,status=no'
-                );
-                if (classWindow) {
-                    console.log('已打开班级管理窗口');
-                } else {
-                    console.error('无法打开班级管理窗口，可能被浏览器拦截');
-                }
-            } catch (error) {
-                console.error('创建无边框窗口失败:', error);
-            }
-        }
-    }
-
-
-    /**
-     * 设置全局错误处理
-     */
-    setupErrorHandling() {
-        // 全局错误处理
-        window.onerror = (message, source, lineno, colno, error) => {
-            this.handleError(error || new Error(message));
-            return true;
-        };
-    }
-
-    /**
-     * 处理错误
-     */
-    handleError(error) {
-        console.error('应用错误:', error);
-
-        // 显示用户友好的错误信息
-        this.showErrorNotification(error);
-
-        // 触发自定义事件
-        this.dispatchEvent('error', {
-            error: error,
-            message: error.message,
-            stack: error.stack
-        });
-    }
-
-    /**
-     * 显示错误通知
-     */
-    showErrorNotification(error) {
-        // 创建错误通知元素
-        const notification = document.createElement('div');
-        notification.className = 'error-notification';
-        const errorMessage = error && error.message ? error.message : '未知错误';
-        notification.innerHTML = `
-            <div class="error-content">
-                <strong>发生错误</strong>
-                <p>${errorMessage}</p>
-                <button class="close-btn">×</button>
-            </div>
-        `;
-
-        document.body.appendChild(notification);
-
-        // 自动隐藏
-        setTimeout(() => {
-            notification.remove();
-        }, 5000);
-
-        // 关闭按钮
-        notification.querySelector('.close-btn').addEventListener('click', () => {
-            notification.remove();
-        });
+    handleWindowResize(sizeInfo) {
+        // 这里可以添加具体的窗口大小变化处理逻辑
+        logger.debug('处理窗口大小变化:', sizeInfo);
     }
 
     /**
      * 处理初始化错误
      */
     handleInitializationError(error) {
-        console.error('初始化错误:', error);
-
-        // 显示错误页面或通知
-        document.body.innerHTML = `
-            <div class="error-page">
-                <h1>应用初始化失败</h1>
-                <p>${error.message}</p>
-                <button onclick="location.reload()">重新加载</button>
-            </div>
-        `;
-
-        // 尝试恢复
-        setTimeout(() => {
-            location.reload();
-        }, 5000);
-    }
-
-    /**
-     * 清理资源
-     */
-    cleanup() {
-        console.log('🧹 清理应用资源...');
-
-        // 销毁功能模块
-        if (this.navigation) {
-            this.navigation.destroy();
+        if (this.errorHandler) {
+            this.errorHandler.handleInitializationError(error);
+        } else {
+            // 备用错误处理
+            console.error('应用初始化失败:', error);
+            alert('应用初始化失败，请刷新页面重试');
         }
-
-        if (this.windowResize) {
-            this.windowResize.destroy();
-        }
-
-        if (this.verticalSplitter) {
-            this.verticalSplitter.destroy();
-        }
-
-        // 移除事件监听器
-        document.removeEventListener('letter-changed', this.handleLetterChange);
-        document.removeEventListener('student-selected', this.handleStudentSelect);
-        document.removeEventListener('error', this.handleError);
-
-        console.log('✅ 应用资源清理完成');
     }
 
     /**
      * 获取应用状态
      */
     getStatus() {
-        return {
-            isInitialized: this.isInitialized,
-            navigation: this.navigation ? this.navigation.getStatus() : null,
-            windowResize: this.windowResize ? this.windowResize.getHandleStatus() : null,
-            verticalSplitter: this.verticalSplitter ? this.verticalSplitter.getStatus() : null
-        };
+        return getStatus();
     }
 
     /**
-     * 分发自定义事件
+     * 清理资源
      */
-    dispatchEvent(eventName, detail) {
-        const event = new CustomEvent(eventName, {
-            detail,
-            bubbles: true,
-            cancelable: true
-        });
-        document.dispatchEvent(event);
-    }
+    cleanup() {
+        logger.info('开始清理应用资源');
 
-    /**
-     * 事件处理函数
-     */
-    handleLetterChange(e) {
-        console.log('字母改变:', e.detail);
-    }
+        try {
+            // 清理各个模块
+            if (this.windowManager) {
+                this.windowManager.cleanup();
+            }
 
-    handleStudentSelect(e) {
-        console.log('学生选中:', e.detail);
+            if (this.navigationManager) {
+                this.navigationManager.cleanup();
+            }
+
+            if (this.errorHandler) {
+                this.errorHandler.cleanup();
+            }
+
+            if (this.classManager) {
+                this.classManager.cleanup();
+            }
+
+            this.isInitialized = false;
+            this.globalEventsBound = false;
+
+            logger.info('应用资源清理完成');
+
+        } catch (error) {
+            logger.error('清理应用资源失败:', error);
+        }
     }
 }
 
-// 初始化应用
-window.addEventListener('DOMContentLoaded', () => {
-    window.app = new ScoreBoardApp();
-});
+// 创建全局应用实例
+window.appInstance = new ScoreBoardApp();
+
+// 导出应用类
+module.exports = ScoreBoardApp;

@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; font-src 'self' https://cdnjs.cloudflare.com; img-src 'self' data:;">
+    <title>ScoreBoard</title>
+
+    <!-- Font Awesome 图标字体 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- 样式文件 -->
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="navigation-main.css">
+
+    <style>
+        /* 性能优化：减少重绘和回流 */
+        .nav-button, .student-item {
+            will-change: transform;
+            transform: translateZ(0);
+        }
+
+        /* 优化动画性能 */
+        .ripple {
+            pointer-events: none;
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.4);
+            transform: scale(0);
+            animation: ripple-animation 0.6s ease-out;
+        }
+
+        @keyframes ripple-animation {
+            to {
+                transform: scale(2);
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 标题栏 -->
+    <div class="title-bar" id="titleBar">
+        <div class="title-text">ScoreBoard</div>
+        <div class="window-controls">
+            <button class="window-button minimize-btn" id="minimizeBtn" title="最小化">
+                <i class="fas fa-window-minimize"></i>
+            </button>
+            <button class="window-button close-btn" id="closeBtn" title="关闭">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- 主内容区域 -->
+    <div class="main-content">
+        <!-- 左侧区域 -->
+        <div class="left-panel" id="leftPanel">
+            <!-- 左侧导航栏（固定60px宽） -->
+            <div class="left-nav" id="leftNav">
+                <div class="nav-content">
+                    <div class="nav-buttons" id="navButtons">
+                        <!-- 首字母按钮将在这里动态生成 -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 垂直分割线 -->
+        <div class="vertical-line" id="verticalLine"></div>
+
+        <!-- 右侧区域 -->
+        <div class="right-panel" id="rightPanel">
+            <div class="panel-content">
+                <div id="studentList" class="student-list">
+                    <div class="empty-state">
+                        <div class="empty-icon">👥</div>
+                        <div class="empty-message">点击左侧字母按钮查看学生列表</div>
+                        <div class="empty-hint">选择上方字母来浏览学生</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 底部状态栏 -->
+    <div class="status-bar">
+        <button class="class-button" id="classBtn" title="班级">
+            <div class="class-button-content">
+                <i class="fas fa-users"></i>
+                <span class="class-name">高二(3)班</span>
+            </div>
+        </button>
+        <div class="status-spacer"></div>
+        <button class="status-button settings-btn" id="settingsBtn" title="设置">
+            <i class="fas fa-cog"></i>
+        </button>
+    </div>
+
+    <!-- 窗口调整大小手柄 -->
+    <div class="resize-handle resize-handle-bottom"></div>
+    <div class="resize-handle resize-handle-right"></div>
+    <div class="resize-handle resize-handle-bottom-right"></div>
+
+    <!-- JavaScript 文件 -->
+    <script src="window-resize.js"></script>
+    <script src="vertical-splitter.js"></script>
+    <script src="navigation.js"></script>
+    <script src="app.js"></script>
+
+    <script>
+        // 学生数据
+        const students = [
+            '张三', '李四', '王五', '赵六', '钱七', '孙八', '李九', '周十',
+            '白一', '陈二', '程三', '邓四', '冯五', '陈六', '白七', '程八',
+            '黄九', '林十', '郑一', '王二', '张三', '李四', '赵五', '钱六',
+            '孙七', '李八', '周九', '吴十', '郑一', '王二', '冯三', '陈四',
+            '白五', '程六', '邓七', '黄八', '林九', '郑十', '冯一', '陈二',
+            'Ava', 'Bob', 'Carl', 'David', 'Emma', 'Frank', 'Grace', 'Henry'
+        ];
+
+        // 拼音映射表
+        const pinyinMap = {
+            '张': 'zhang', '李': 'li', '王': 'wang', '赵': 'zhao', '钱': 'qian',
+            '孙': 'sun', '周': 'zhou', '吴': 'wu', '郑': 'zheng', '冯': 'feng',
+            '陈': 'chen', '褚': 'chu', '卫': 'wei', '蒋': 'jiang', '沈': 'shen',
+            '韩': 'han', '杨': 'yang', '朱': 'zhu', '秦': 'qin', '尤': 'you',
+            '许': 'xu', '何': 'he', '吕': 'lv', '施': 'shi', '白': 'bai',
+            '程': 'cheng', '邓': 'deng', '黄': 'huang', '林': 'lin', '刘': 'liu',
+            '徐': 'xu', '马': 'ma', '于': 'yu', '董': 'dong', '梁': 'liang',
+            '肖': 'xiao', '田': 'tian', '胡': 'hu', '袁': 'yuan', '潘': 'pan',
+            '陆': 'lu', '高': 'gao', '郭': 'guo', '曹': 'cao', '彭': 'peng',
+            '曾': 'zeng', '谢': 'xie', '苏': 'su', '卢': 'lu', '蒋': 'jiang',
+            '蔡': 'cai', '贾': 'jia', '丁': 'ding', '魏': 'wei', '薛': 'xue',
+            '叶': 'ye', '阎': 'yan', '余': 'yu'
+        };
+
+        const firstLetterMap = {
+            '张': 'Z', '李': 'L', '王': 'W', '赵': 'Z', '钱': 'Q',
+            '孙': 'S', '周': 'Z', '吴': 'W', '郑': 'Z', '冯': 'F',
+            '陈': 'C', '褚': 'C', '卫': 'W', '蒋': 'J', '沈': 'S',
+            '韩': 'H', '杨': 'Y', '朱': 'Z', '秦': 'Q', '尤': 'Y',
+            '许': 'X', '何': 'H', '吕': 'L', '施': 'S', '白': 'B',
+            '程': 'C', '邓': 'D', '黄': 'H', '林': 'L', '刘': 'L',
+            '徐': 'X', '马': 'M', '于': 'Y', '董': 'D', '梁': 'L',
+            '肖': 'X', '田': 'T', '胡': 'H', '袁': 'Y', '潘': 'P',
+            '陆': 'L', '高': 'G', '郭': 'G', '曹': 'C', '彭': 'P',
+            '曾': 'Z', '谢': 'X', '苏': 'S', '卢': 'L', '蒋': 'J',
+            '蔡': 'C', '贾': 'J', '丁': 'D', '魏': 'W', '薛': 'X',
+            '叶': 'Y', '阎': 'Y', '余': 'Y'
+        };
+
+        // 功能函数
+        function getPinyin(text) {
+            return pinyinMap[text] || text;
+        }
+
+        function getFirstLetters(names) {
+            const letters = new Set();
+            names.forEach(name => {
+                if (/^[a-zA-Z]/.test(name)) {
+                    letters.add(name[0].toUpperCase());
+                } else if (/^[一-龥]/.test(name)) {
+                    const letter = firstLetterMap[name[0]] || '#';
+                    letters.add(letter);
+                } else {
+                    letters.add('#');
+                }
+            });
+            return Array.from(letters).sort();
+        }
+
+        function groupStudentsByLetter(names) {
+            const groups = {};
+            names.forEach(name => {
+                let letter = '#';
+                if (/^[a-zA-Z]/.test(name)) {
+                    letter = name[0].toUpperCase();
+                } else if (/^[一-龥]/.test(name)) {
+                    letter = firstLetterMap[name[0]] || '#';
+                }
+                if (!groups[letter]) groups[letter] = [];
+                groups[letter].push(name);
+            });
+            return groups;
+        }
+
+        // 初始化导航按钮
+        function createNavButtons() {
+            const letters = getFirstLetters(students);
+            const container = document.getElementById('navButtons');
+            if (!container) return;
+
+            // 使用DocumentFragment减少DOM操作
+            const fragment = document.createDocumentFragment();
+
+            letters.forEach(letter => {
+                const button = document.createElement('button');
+                button.className = 'nav-button';
+                button.textContent = letter;
+                button.setAttribute('data-letter', letter);
+                button.setAttribute('title', `显示以 ${letter} 开头的学生`);
+                button.addEventListener('click', () => handleLetterClick(letter));
+
+                // 水波纹效果
+                button.addEventListener('mousedown', function(e) {
+                    createRipple(this, e);
+                });
+
+                fragment.appendChild(button);
+            });
+
+            container.innerHTML = '';
+            container.appendChild(fragment);
+
+            // 默认选择第一个字母
+            if (letters.length > 0) {
+                handleLetterClick(letters[0]);
+            }
+        }
+
+        // 处理字母点击
+        function handleLetterClick(letter) {
+            // 更新按钮状态
+            document.querySelectorAll('.nav-button').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.querySelector(`[data-letter="${letter}"]`).classList.add('active');
+
+            // 显示学生列表
+            displayStudents(letter);
+        }
+
+        // 显示学生列表
+        function displayStudents(letter) {
+            const groups = groupStudentsByLetter(students);
+            const studentList = groups[letter] || [];
+            const container = document.getElementById('studentList');
+            if (!container) return;
+
+            if (studentList.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">👥</div>
+                        <div class="empty-message">没有找到以 ${letter} 开头的学生</div>
+                        <div class="empty-hint">请选择其他字母或添加学生</div>
+                    </div>
+                `;
+                return;
+            }
+
+            const studentItems = studentList.map((student, index) => `
+                <div class="student-item" data-student="${student}" data-index="${index}" onclick="handleStudentClick('${student}', this)">
+                    <div class="student-name">${student}</div>
+                    <div class="student-pinyin">${getPinyin(student)}</div>
+                </div>
+            `).join('');
+
+            container.innerHTML = `
+                <div class="students-header">
+                    <h4>字母 ${letter} 的学生 (${studentList.length}人)</h4>
+                </div>
+                <div class="students-container">
+                    ${studentItems}
+                </div>
+            `;
+        }
+
+        // 处理学生点击
+        function handleStudentClick(student, element) {
+            // 移除之前的选中状态
+            const prevSelected = document.querySelectorAll('.student-item.selected');
+            prevSelected.forEach(item => item.classList.remove('selected'));
+
+            // 添加选中状态
+            element.classList.add('selected');
+
+            // 学生选中处理完成
+        }
+
+        // 创建水波纹效果
+        function createRipple(button, event) {
+            const ripple = document.createElement('span');
+            ripple.className = 'ripple';
+
+            const rect = button.getBoundingClientRect();
+            const size = Math.max(rect.width, rect.height);
+            const x = event.clientX - rect.left - size / 2;
+            const y = event.clientY - rect.top - size / 2;
+
+            ripple.style.width = ripple.style.height = size + 'px';
+            ripple.style.left = x + 'px';
+            ripple.style.top = y + 'px';
+
+            button.appendChild(ripple);
+
+            setTimeout(() => {
+                ripple.remove();
+            }, 600);
+        }
+
+        // 窗口控制按钮事件绑定
+        function bindWindowControls() {
+            const minimizeBtn = document.getElementById('minimizeBtn');
+            const closeBtn = document.getElementById('closeBtn');
+            const settingsBtn = document.getElementById('settingsBtn');
+            const classBtn = document.getElementById('classBtn');
+
+            if (minimizeBtn) {
+                minimizeBtn.addEventListener('mousedown', (e) => {
+                    createRipple(minimizeBtn, e);
+                });
+                minimizeBtn.addEventListener('click', () => {
+                    setTimeout(() => {
+                        if (window.electronAPI && window.electronAPI.minimizeWindow) {
+                            window.electronAPI.minimizeWindow();
+                        }
+                    }, 200);
+                });
+            }
+
+            if (closeBtn) {
+                closeBtn.addEventListener('mousedown', (e) => {
+                    createRipple(closeBtn, e);
+                });
+                closeBtn.addEventListener('click', () => {
+                    setTimeout(() => {
+                        if (window.electronAPI && window.electronAPI.closeWindow) {
+                            window.electronAPI.closeWindow();
+                        }
+                    }, 200);
+                });
+            }
+
+            if (settingsBtn) {
+                settingsBtn.addEventListener('mousedown', (e) => {
+                    createRipple(settingsBtn, e);
+                });
+                settingsBtn.addEventListener('click', () => {
+                    setTimeout(() => {
+                        if (window.electronAPI && window.electronAPI.openSettings) {
+                            window.electronAPI.openSettings();
+                        }
+                    }, 200);
+                });
+            }
+
+            if (classBtn) {
+                classBtn.addEventListener('mousedown', (e) => {
+                    createRipple(classBtn, e);
+                });
+                classBtn.addEventListener('click', () => {
+                    setTimeout(() => {
+                        if (window.electronAPI && window.electronAPI.openClassManagement) {
+                            window.electronAPI.openClassManagement({
+                                width: 500,
+                                height: 400,
+                                frame: false,
+                                resizable: false
+                            });
+                        }
+                    }, 200);
+                });
+            }
+        }
+
+        // 初始化应用
+        window.addEventListener('DOMContentLoaded', () => {
+            // 初始化导航
+            createNavButtons();
+
+            // 绑定窗口控制按钮
+            bindWindowControls();
+        });
+    </script>
+</body>
+</html>"file_path":"D:/Code代码/ScoreBoard-for-Class/index-final.html
