@@ -17,10 +17,16 @@ class DatabaseManager {
     this.dbPath = path.join(__dirname, 'data.db');
   }
 
-  // 初始化数据库
+  // 初始化数据库（带超时机制）
   initDatabase() {
     return new Promise((resolve, reject) => {
+      // 添加超时机制，10秒超时
+      const timeout = setTimeout(() => {
+        reject(new Error('数据库初始化超时'));
+      }, 10000);
+
       this.db = new sqlite3.Database(this.dbPath, (err) => {
+        clearTimeout(timeout);
         if (err) {
           console.error('Database connection failed:', err);
           reject(err);

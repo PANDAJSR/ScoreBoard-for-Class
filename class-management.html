@@ -26,17 +26,30 @@
 
     <!-- 主内容区域 -->
     <div class="class-management-content">
-        <h3>班级信息管理</h3>
-        <p>这里可以管理班级相关信息</p>
+        <h3>班级管理</h3>
 
-        <div class="class-info">
-            <label>班级名称：</label>
-            <input type="text" id="classNameInput" value="高二(3)班" placeholder="请输入班级名称">
+        <!-- 操作按钮区域 -->
+        <div class="action-buttons">
+            <button class="action-btn new-btn" id="newClassBtn">
+                <i class="fas fa-plus"></i>
+                新建班级
+            </button>
+            <button class="action-btn edit-btn" id="editClassBtn">
+                <i class="fas fa-edit"></i>
+                编辑班级信息
+            </button>
+            <button class="action-btn delete-btn" id="deleteClassBtn">
+                <i class="fas fa-trash"></i>
+                删除班级
+            </button>
         </div>
 
-        <div class="class-actions">
-            <button class="save-btn" id="saveBtn">保存</button>
-            <button class="cancel-btn" id="cancelBtn">取消</button>
+        <!-- 班级列表 -->
+        <div class="class-list-container">
+            <h4>班级列表</h4>
+            <div class="class-list" id="classList">
+                <!-- 班级列表项将在这里动态生成 -->
+            </div>
         </div>
     </div>
 

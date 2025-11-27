@@ -1,6 +1,6 @@
 const { contextBridge, ipcRenderer } = require('electron');
 
-// 简化的预加载脚本，避免复杂模块加载问题
+// 简化的预加载脚本，避免沙盒环境错误
 
 // 备用拼音映射表
 const pinyinMap = {
@@ -33,29 +33,28 @@ const firstLetterMap = {
     '叶': 'Y', '阎': 'Y', '余': 'Y'
 };
 
-// 简化的API实现
-try {
-    contextBridge.exposeInMainWorld('electronAPI', {
-        // 窗口控制
-        minimizeWindow: () => ipcRenderer.invoke('window-minimize'),
-        closeWindow: () => ipcRenderer.invoke('window-close'),
-        openSettings: () => ipcRenderer.invoke('open-settings'),
-        openClassManagement: (options) => ipcRenderer.invoke('open-class-management', options),
+// 安全的拼音功能实现
+function getPinyinSafe(text) {
+    try {
+        if (!text || typeof text !== 'string' || text.length === 0) return text;
+        const firstChar = text[0];
+        return pinyinMap[firstChar] || text;
+    } catch (error) {
+        console.error('拼音转换错误:', error);
+        return text;
+    }
+}
 
-        // 平台信息
-        onPlatformInfo: (callback) => {
-            ipcRenderer.once('platform-info', (event, data) => callback(data));
-        },
+// 安全的字母提取实现
+function getFirstLettersSafe(names) {
+    try {
+        if (!Array.isArray(names)) return [];
+        const letters = new Set();
 
-        // 拼音功能（简化版）
-        getPinyin: (text) => {
-            if (!text || text.length === 0) return text;
-            return pinyinMap[text[0]] || text;
-        },
+        names.forEach(name => {
+            if (typeof name !== 'string') return;
 
-        getFirstLetters: (names) => {
-            const letters = new Set();
-            names.forEach(name => {
+            try {
                 if (/^[a-zA-Z]/.test(name)) {
                     letters.add(name[0].toUpperCase());
                 } else if (/^[一-龥]/.test(name)) {
@@ -64,27 +63,141 @@ try {
                 } else {
                     letters.add('#');
                 }
-            });
-            return Array.from(letters).sort();
-        },
+            } catch (error) {
+                console.error('字母提取错误:', error);
+            }
+        });
 
-        groupStudentsByLetter: (names) => {
-            const groups = {};
-            names.forEach(name => {
+        return Array.from(letters).sort();
+    } catch (error) {
+        console.error('获取首字母失败:', error);
+        return [];
+    }
+}
+
+// 安全的学生分组实现
+function groupStudentsByLetterSafe(names) {
+    try {
+        if (!Array.isArray(names)) return {};
+
+        const groups = {};
+        names.forEach(name => {
+            if (typeof name !== 'string') return;
+
+            try {
                 let letter = '#';
                 if (/^[a-zA-Z]/.test(name)) {
                     letter = name[0].toUpperCase();
                 } else if (/^[一-龥]/.test(name)) {
                     letter = firstLetterMap[name[0]] || '#';
                 }
+
                 if (!groups[letter]) groups[letter] = [];
                 groups[letter].push(name);
-            });
-            return groups;
-        }
-    });
+            } catch (error) {
+                console.error('学生分组错误:', error);
+            }
+        });
 
-    console.log('简化版预加载脚本初始化成功');
+        return groups;
+    } catch (error) {
+        console.error('学生分组失败:', error);
+        return {};
+    }
+}
+
+// 简化的API实现
+try {
+    // 基础窗口控制API
+    const windowAPI = {
+        minimizeWindow: () => ipcRenderer.invoke('window-minimize'),
+        closeWindow: () => ipcRenderer.invoke('window-close'),
+        openSettings: () => ipcRenderer.invoke('open-settings'),
+        openClassManagement: (options) => ipcRenderer.invoke('open-class-management', options)
+    };
+
+    // 平台信息API
+    const platformAPI = {
+        onPlatformInfo: (callback) => {
+            ipcRenderer.once('platform-info', (event, data) => callback(data));
+        }
+    };
+
+    // 数据目录管理API
+    const dataDirAPI = {
+        getDataDirectory: () => ipcRenderer.invoke('getDataDirectory'),
+        selectDataDirectory: () => ipcRenderer.invoke('selectDataDirectory'),
+        resetDataDirectory: () => ipcRenderer.invoke('resetDataDirectory')
+    };
+
+    // 班级管理API
+    const classAPI = {
+        getClassList: () => ipcRenderer.invoke('getClassList'),
+        saveClassList: (classes) => ipcRenderer.invoke('saveClassList', classes),
+        createClass: (className) => ipcRenderer.invoke('createClass', className),
+        deleteClass: (classId) => ipcRenderer.invoke('deleteClass', classId),
+        getCurrentClass: () => ipcRenderer.invoke('getCurrentClass'),
+        setCurrentClass: (classId) => ipcRenderer.invoke('setCurrentClass', classId),
+        getClassStudents: (classId) => ipcRenderer.invoke('getClassStudents', classId),
+        saveClassStudents: (classId, students) => ipcRenderer.invoke('saveClassStudents', classId, students),
+        editClassStudents: (classId) => ipcRenderer.invoke('editClassStudents', classId)
+    };
+
+    // 班级信息事件
+    const classEventAPI = {
+        onClassInfo: (callback) => {
+            ipcRenderer.once('class-info', (event, data) => callback(data));
+        }
+    };
+
+    // 拼音功能API
+    const pinyinAPI = {
+        getPinyin: getPinyinSafe,
+        getFirstLetters: getFirstLettersSafe,
+        groupStudentsByLetter: groupStudentsByLetterSafe
+    };
+
+    // 合并所有API
+    const electronAPI = {
+        ...windowAPI,
+        ...platformAPI,
+        ...dataDirAPI,
+        ...classAPI,
+        ...classEventAPI,
+        ...pinyinAPI
+    };
+
+    // 暴露API到渲染进程
+    contextBridge.exposeInMainWorld('electronAPI', electronAPI);
+
+    console.log('预加载脚本初始化成功');
 } catch (error) {
     console.error('预加载脚本初始化失败:', error);
+
+    // 如果contextBridge失败，尝试备用方案
+    try {
+        window.electronAPI = {
+            minimizeWindow: () => ipcRenderer.invoke('window-minimize'),
+            closeWindow: () => ipcRenderer.invoke('window-close'),
+            openSettings: () => ipcRenderer.invoke('open-settings'),
+            openClassManagement: () => ipcRenderer.invoke('open-class-management'),
+            getClassList: () => Promise.resolve([]),
+            saveClassList: () => Promise.resolve({ success: true }),
+            createClass: () => Promise.resolve({ success: true }),
+            deleteClass: () => Promise.resolve({ success: true }),
+            getCurrentClass: () => Promise.resolve(null),
+            setCurrentClass: () => Promise.resolve({ success: true }),
+            getClassStudents: () => Promise.resolve({ success: true, students: [] }),
+            saveClassStudents: () => Promise.resolve({ success: true, studentCount: 0 }),
+            editClassStudents: () => Promise.resolve({ success: true }),
+            onPlatformInfo: () => {},
+            onClassInfo: () => {},
+            getPinyin: (text) => text,
+            getFirstLetters: () => [],
+            groupStudentsByLetter: () => ({})
+        };
+        console.log('使用备用方案初始化electronAPI');
+    } catch (backupError) {
+        console.error('备用方案也失败:', backupError);
+    }
 }

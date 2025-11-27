@@ -19,18 +19,16 @@ body {
     -webkit-app-region: drag;
     display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: space-between;
     position: relative;
     border-top: 2px solid #505255;
+    padding: 0 16px;
 }
 
 .title-text {
     color: #ffffff;
     font-size: 24px;
     font-weight: 600;
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
     display: flex;
     align-items: center;
     height: 60px;
@@ -40,7 +38,7 @@ body {
 .window-controls {
     position: absolute;
     right: 16px;
-    display: none;
+    display: flex;
     gap: 12px;
 }
 
@@ -473,4 +471,101 @@ body {
 
 .right-panel {
     height: calc(100% - 120px);
+}
+
+/* 学生列表样式 */
+.student-list {
+    padding: 20px;
+    height: 100%;
+    overflow-y: auto;
+}
+
+.students-header {
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.students-header h4 {
+    color: #333;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.students-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 10px;
+}
+
+.student-item {
+    background: #ffffff;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 12px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
+}
+
+.student-item:hover {
+    background: #f8f9fa;
+    border-color: #4CAF50;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.student-item.selected {
+    background: #e8f5e8;
+    border-color: #4CAF50;
+}
+
+.student-name {
+    font-size: 16px;
+    font-weight: 500;
+    color: #333;
+    margin-bottom: 4px;
+}
+
+.student-pinyin {
+    font-size: 12px;
+    color: #666;
+    font-style: italic;
+}
+
+/* 空状态样式 */
+.empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: #666;
+}
+
+.empty-icon {
+    font-size: 48px;
+    margin-bottom: 16px;
+    opacity: 0.5;
+}
+
+.empty-message {
+    font-size: 18px;
+    margin-bottom: 8px;
+    color: #333;
+}
+
+.empty-hint {
+    font-size: 14px;
+    color: #999;
+}
+
+/* 面板内容样式 */
+.panel-content {
+    padding: 20px;
+    height: 100%;
+    overflow-y: auto;
+}
+
+.panel-content h3 {
+    color: #333;
+    margin-bottom: 20px;
+    font-size: 18px;
 }

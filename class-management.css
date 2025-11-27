@@ -14,87 +14,147 @@
     font-weight: 600;
 }
 
-.class-management-content p {
-    margin: 0 0 20px 0;
-    color: #b8bfc4;
-    font-size: 14px;
-}
-
-/* 班级信息输入区域 */
-.class-info {
+/* 操作按钮区域 */
+.action-buttons {
+    display: flex;
+    gap: 12px;
     margin-bottom: 20px;
 }
 
-.class-info label {
-    display: block;
-    margin-bottom: 8px;
-    color: #b8bfc4;
-    font-size: 14px;
-    font-weight: 500;
-}
-
-.class-info input {
-    width: 100%;
-    padding: 10px 12px;
-    border: 1px solid #505255;
-    border-radius: 6px;
-    background-color: #2a2d35;
-    color: #ffffff;
-    font-size: 14px;
-    box-sizing: border-box;
-    transition: border-color 0.3s ease;
-}
-
-.class-info input:focus {
-    outline: none;
-    border-color: #4a9eff;
-}
-
-/* 操作按钮区域 */
-.class-actions {
-    display: flex;
-    gap: 12px;
-    justify-content: flex-end;
-}
-
-.save-btn, .cancel-btn {
-    padding: 8px 16px;
+.action-btn {
+    flex: 1;
+    padding: 12px 16px;
     border: none;
-    border-radius: 6px;
+    border-radius: 8px;
     font-size: 14px;
     font-weight: 500;
     cursor: pointer;
     transition: all 0.3s ease;
     -webkit-app-region: no-drag;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
 }
 
-.save-btn {
+.action-btn i {
+    font-size: 14px;
+}
+
+/* 新建班级按钮 */
+.new-btn {
     background-color: #4a9eff;
     color: #ffffff;
 }
 
-.save-btn:hover {
+.new-btn:hover {
     background-color: #5aa9ff;
 }
 
-.cancel-btn {
-    background-color: rgba(255, 255, 255, 0.1);
-    color: #b8bfc4;
-}
-
-.cancel-btn:hover {
-    background-color: rgba(255, 255, 255, 0.2);
+/* 编辑班级信息按钮 */
+.edit-btn {
+    background-color: #ffa500;
     color: #ffffff;
 }
 
+.edit-btn:hover {
+    background-color: #ffb020;
+}
+
+/* 删除班级按钮 */
+.delete-btn {
+    background-color: #e81123;
+    color: #ffffff;
+}
+
+.delete-btn:hover {
+    background-color: #f02335;
+}
+
 /* 按钮点击效果 */
-.save-btn:active, .cancel-btn:active {
+.action-btn:active {
     transform: scale(0.95);
 }
 
 /* 按钮水波纹效果 */
-.save-btn .ripple, .cancel-btn .ripple {
+.action-btn .ripple {
     background-color: rgba(255, 255, 255, 0.3);
+}
+
+/* 班级列表容器 */
+.class-list-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.class-list-container h4 {
+    margin: 0 0 12px 0;
+    color: #b8bfc4;
+    font-size: 16px;
+    font-weight: 500;
+}
+
+/* 班级列表 */
+.class-list {
+    flex: 1;
+    overflow-y: auto;
+    background-color: #2a2d35;
+    border-radius: 8px;
+    padding: 12px;
+    border: 1px solid #505255;
+}
+
+/* 班级列表项 */
+.class-item {
+    display: flex;
+    align-items: center;
+    padding: 12px;
+    margin-bottom: 8px;
+    background-color: rgba(255, 255, 255, 0.05);
+    border-radius: 6px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.class-item:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+.class-item.selected {
+    background-color: rgba(74, 158, 255, 0.2);
+    border-color: #4a9eff;
+}
+
+.class-item input[type="radio"] {
+    margin-right: 12px;
+    width: 16px;
+    height: 16px;
+    accent-color: #4a9eff;
+}
+
+.class-item-name {
+    flex: 1;
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.class-item-students {
+    color: #b8bfc4;
+    font-size: 12px;
+    margin-left: 8px;
+}
+
+/* 空消息提示 */
+.empty-message {
+    text-align: center;
+    color: #b8bfc4;
+    font-size: 14px;
+    padding: 40px 20px;
+    opacity: 0.7;
 }
 
 /* 确保标题栏样式一致 */

@@ -150,6 +150,7 @@ function registerClassManagementHandlers() {
 
   // 创建班级 - 使用数据目录
   ipcMain.handle('createClass', async (event, className) => {
+    let classDbManager = null;
     try {
       const classId = Date.now().toString();
       const dbFileName = `class_${classId}.db`;
@@ -161,11 +162,25 @@ function registerClassManagementHandlers() {
 
       // 创建数据库
       const DatabaseManager = require('./database.js');
-      const classDbManager = new DatabaseManager();
+      classDbManager = new DatabaseManager();
       classDbManager.dbPath = dbPath;
 
       await classDbManager.initDatabase();
-      classDbManager.close();
+
+      // 关闭数据库连接
+      await new Promise((resolve, reject) => {
+        if (classDbManager.db) {
+          classDbManager.db.close((err) => {
+            if (err) {
+              reject(err);
+            } else {
+              resolve();
+            }
+          });
+        } else {
+          resolve();
+        }
+      });
 
       return {
         success: true,
@@ -178,8 +193,16 @@ function registerClassManagementHandlers() {
         }
       };
     } catch (error) {
-      console.error('创建班级失败:', error);
       return { success: false, error: error.message };
+    } finally {
+      // 确保数据库连接被关闭
+      if (classDbManager && classDbManager.db) {
+        try {
+          classDbManager.db.close();
+        } catch (error) {
+          // 静默处理关闭错误
+        }
+      }
     }
   });
 
@@ -335,6 +358,64 @@ function registerClassManagementHandlers() {
       return { success: true };
     } catch (error) {
       console.error('编辑班级学生失败:', error);
+      return { success: false, error: error.message };
+    }
+  });
+
+  // 删除班级 - 使用数据目录
+  ipcMain.handle('deleteClass', async (event, classId) => {
+    try {
+      // 读取班级列表
+      let classes = [];
+      try {
+        const classListPath = dataDirManager.getClassListPath();
+        const data = await fs.readFile(classListPath, 'utf8');
+        classes = JSON.parse(data);
+      } catch {
+        classes = [];
+      }
+
+      // 找到班级
+      const classIndex = classes.findIndex(c => c.id === classId);
+      if (classIndex === -1) {
+        return { success: false, error: '班级不存在' };
+      }
+
+      const classData = classes[classIndex];
+
+      // 删除班级数据库文件
+      try {
+        const classesDir = dataDirManager.getClassesDirectory();
+        const dbPath = path.join(classesDir, classData.filePath);
+        await fs.unlink(dbPath);
+      } catch (error) {
+        console.warn('删除班级数据库文件失败:', error);
+        // 即使文件删除失败，也继续删除列表中的记录
+      }
+
+      // 从列表中删除班级
+      classes.splice(classIndex, 1);
+
+      // 保存更新后的班级列表
+      await fs.writeFile(dataDirManager.getClassListPath(), JSON.stringify(classes, null, 2));
+
+      // 如果删除的是当前选中的班级，清除当前班级设置
+      try {
+        const configPath = dataDirManager.getConfigPath();
+        const configData = await fs.readFile(configPath, 'utf8');
+        const config = JSON.parse(configData);
+
+        if (config.currentClass === classId) {
+          config.currentClass = null;
+          await fs.writeFile(configPath, JSON.stringify(config, null, 2));
+        }
+      } catch (error) {
+        console.warn('更新当前班级配置失败:', error);
+      }
+
+      return { success: true };
+    } catch (error) {
+      console.error('删除班级失败:', error);
       return { success: false, error: error.message };
     }
   });

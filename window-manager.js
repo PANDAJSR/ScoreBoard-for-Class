@@ -61,29 +61,47 @@ function createClassManagementWindow(mainWindow, options = {}) {
     return;
   }
 
-  classManagementWindow = new BrowserWindow({
-    width: options.width || 500,
-    height: options.height || 400,
-    frame: options.frame !== undefined ? options.frame : false,
-    resizable: options.resizable !== undefined ? options.resizable : false,
-    minimizable: options.minimizable !== undefined ? options.minimizable : false,
-    maximizable: options.maximizable !== undefined ? options.maximizable : false,
-    parent: mainWindow,
-    modal: false,
-    webPreferences: {
-      nodeIntegration: false,
-      contextIsolation: true,
-      sandbox: false,
-      webSecurity: false,
-      preload: path.join(__dirname, 'preload-simple.js')
+  try {
+    // 创建无边框窗口，移除系统标题栏和菜单栏
+    classManagementWindow = new BrowserWindow({
+      width: options.width || 500,
+      height: options.height || 400,
+      frame: false,                    // 移除系统标题栏
+      titleBarStyle: 'hidden',         // 隐藏标题栏样式
+      resizable: options.resizable !== undefined ? options.resizable : false,
+      minimizable: options.minimizable !== undefined ? options.minimizable : false,
+      maximizable: options.maximizable !== undefined ? options.maximizable : false,
+      show: true,
+      parent: mainWindow,
+      modal: false,
+      webPreferences: {
+        nodeIntegration: false,
+        contextIsolation: true,
+        sandbox: false,
+        webSecurity: false,
+        preload: path.join(__dirname, 'preload-simple.js')
+      }
+    });
+
+    // 隐藏菜单栏
+    classManagementWindow.setMenuBarVisibility(false);
+
+    // 如果存在菜单，则设置为null
+    if (classManagementWindow.setMenu) {
+      classManagementWindow.setMenu(null);
     }
-  });
 
-  classManagementWindow.loadFile('class-management.html');
+    console.log('班级管理窗口已创建：无边框，无菜单栏');
 
-  classManagementWindow.on('closed', () => {
-    classManagementWindow = null;
-  });
+    classManagementWindow.loadFile('class-management.html');
+
+    classManagementWindow.on('closed', () => {
+      console.log('班级管理窗口关闭');
+      classManagementWindow = null;
+    });
+  } catch (error) {
+    console.error('创建班级管理窗口失败:', error);
+  }
 }
 
 /**

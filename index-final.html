@@ -349,10 +349,10 @@
                 classBtn.addEventListener('mousedown', (e) => {
                     createRipple(classBtn, e);
                 });
-                classBtn.addEventListener('click', () => {
-                    setTimeout(() => {
+                classBtn.addEventListener('click', async () => {
+                    setTimeout(async () => {
                         if (window.electronAPI && window.electronAPI.openClassManagement) {
-                            window.electronAPI.openClassManagement({
+                            await window.electronAPI.openClassManagement({
                                 width: 500,
                                 height: 400,
                                 frame: false,

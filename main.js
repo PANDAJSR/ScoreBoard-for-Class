@@ -133,32 +133,16 @@ function setupIPCHandlers() {
     }
   });
 
-  ipcMain.handle('open-class-management', (event, options = {}) => {
+  ipcMain.handle('open-class-management', async (event, options = {}) => {
     try {
       windowManager.createClassManagementWindow(mainWindow, options);
+      return { success: true, message: '班级管理窗口创建成功' };
     } catch (error) {
-      console.error('打开班级管理窗口失败:', error);
+      return { success: false, error: error.message };
     }
   });
 
-  ipcMain.handle('editClassStudents', (event, classId) => {
-    try {
-      const windowManager = require('./window-manager.js');
-      const classListPath = dataDirManager.getClassListPath();
-
-      fs.readFile(classListPath, 'utf8').then(data => {
-        const classes = JSON.parse(data);
-        const classData = classes.find(c => c.id === classId);
-        if (classData) {
-          windowManager.createStudentEditWindow(mainWindow, classId, classData.name);
-        }
-      }).catch(err => {
-        console.error('读取班级列表失败:', err);
-      });
-    } catch (error) {
-      console.error('打开学生编辑窗口失败:', error);
-    }
-  });
+  // 删除重复的editClassStudents处理器，因为它已经在ipc-handlers.js中定义
 
   // 注册其他IPC处理器
   registerIPCHandlers();

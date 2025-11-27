@@ -3,7 +3,14 @@
     "allow": [
       "Bash(node:*)",
       "Bash(findstr:*)",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(npm:*)",
+      "Bash(systeminfo:*)",
+      "Bash(ver)",
+      "Bash(git checkout:*)",
+      "Bash(main.js)",
+      "Bash(cat:*)",
+      "Bash(tasklist)"
     ],
     "deny": [],
     "ask": []
