@@ -51,3 +51,13 @@ release/
 # Temporary folders
 tmp/
 temp/
+
+data/
+# Windows temporary files
+nul
+*.tmp
+*.temp
+
+# Bash profile files (user-specific)
+.bash_profile
+.bashrc

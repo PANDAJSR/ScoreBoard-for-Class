@@ -506,6 +506,7 @@ body {
     cursor: pointer;
     transition: all 0.2s ease;
     position: relative;
+    overflow: hidden;
 }
 
 .student-item:hover {
@@ -518,6 +519,11 @@ body {
 .student-item.selected {
     background: #e8f5e8;
     border-color: #4CAF50;
+}
+
+/* 学生项目水波纹效果 */
+.student-item .ripple {
+    background-color: rgba(76, 175, 80, 0.3);
 }
 
 .student-name {

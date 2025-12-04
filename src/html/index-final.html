@@ -250,7 +250,9 @@
             }
 
             const studentItems = studentList.map((student, index) => `
-                <div class="student-item" data-student="${student}" data-index="${index}" onclick="handleStudentClick('${student}', this)">
+                <div class="student-item" data-student="${student}" data-index="${index}"
+                     onclick="handleStudentClick('${student}', this)"
+                     onmousedown="createRipple(this, event)">
                     <div class="student-name">${student}</div>
                     <div class="student-pinyin">${getPinyin(student)}</div>
                 </div>

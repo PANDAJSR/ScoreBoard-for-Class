@@ -103,6 +103,9 @@ class ClassManagement {
         // 班级管理按钮事件
         const newClassBtn = document.getElementById('newClassBtn');
         if (newClassBtn) {
+            newClassBtn.addEventListener('mousedown', (e) => {
+                this.createRipple(newClassBtn, e);
+            });
             newClassBtn.addEventListener('click', () => {
                 this.createNewClass();
             });
@@ -110,6 +113,9 @@ class ClassManagement {
 
         const editClassBtn = document.getElementById('editClassBtn');
         if (editClassBtn) {
+            editClassBtn.addEventListener('mousedown', (e) => {
+                this.createRipple(editClassBtn, e);
+            });
             editClassBtn.addEventListener('click', () => {
                 this.editClassInfo();
             });
@@ -117,6 +123,9 @@ class ClassManagement {
 
         const deleteClassBtn = document.getElementById('deleteClassBtn');
         if (deleteClassBtn) {
+            deleteClassBtn.addEventListener('mousedown', (e) => {
+                this.createRipple(deleteClassBtn, e);
+            });
             deleteClassBtn.addEventListener('click', () => {
                 this.deleteClass();
             });

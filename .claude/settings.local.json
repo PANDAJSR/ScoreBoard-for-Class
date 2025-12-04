@@ -10,7 +10,13 @@
       "Bash(git checkout:*)",
       "Bash(main.js)",
       "Bash(cat:*)",
-      "Bash(tasklist)"
+      "Bash(tasklist)",
+      "Bash(taskkill:*)",
+      "Bash(chcp:*)",
+      "Bash(git config:*)",
+      "Bash(echo:*)",
+      "Bash(env:*)",
+      "Bash(cmd //c:*)"
     ],
     "deny": [],
     "ask": []

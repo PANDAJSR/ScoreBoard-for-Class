@@ -35,6 +35,8 @@
     align-items: center;
     justify-content: center;
     gap: 8px;
+    position: relative;
+    overflow: hidden;
 }
 
 .action-btn i {
@@ -47,8 +49,9 @@
     color: #ffffff;
 }
 
-.new-btn:hover {
+.new-btn:hover:not(:disabled) {
     background-color: #5aa9ff;
+    transform: translateY(-1px);
 }
 
 /* 编辑班级信息按钮 */
@@ -57,8 +60,9 @@
     color: #ffffff;
 }
 
-.edit-btn:hover {
+.edit-btn:hover:not(:disabled) {
     background-color: #ffb020;
+    transform: translateY(-1px);
 }
 
 /* 删除班级按钮 */
@@ -67,8 +71,9 @@
     color: #ffffff;
 }
 
-.delete-btn:hover {
+.delete-btn:hover:not(:disabled) {
     background-color: #f02335;
+    transform: translateY(-1px);
 }
 
 /* 按钮点击效果 */

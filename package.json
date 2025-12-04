@@ -2,9 +2,11 @@
   "name": "scoreboard-for-class",
   "version": "1.0.0",
   "description": "适用于班级大屏的个人和小组积分管理软件",
-  "main": "main.js",
+  "main": "src/js/main.js",
   "scripts": {
-    "start": "electron .",
+    "start": "node electron-start.js",
+    "start-legacy": "electron .",
+    "start-utf8": "start-utf8.bat",
     "build": "electron-builder",
     "build-win": "electron-builder --win",
     "build-win-x64": "electron-builder --win --x64",

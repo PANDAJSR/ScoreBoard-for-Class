@@ -4,13 +4,6 @@ const fs = require('fs');
 const pinyinModule = require('pinyin');
 const pinyin = pinyinModule.default || pinyinModule;
 
-// 设置控制台编码为UTF-8
-if (process.platform === 'win32') {
-  require('child_process').exec('chcp 65001', (err) => {
-    if (err) console.log('设置UTF-8编码失败:', err);
-  });
-}
-
 class DatabaseManager {
   constructor() {
     this.db = null;

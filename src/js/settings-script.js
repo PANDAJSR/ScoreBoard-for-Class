@@ -151,12 +151,18 @@ function bindEvents() {
     // 选择目录按钮
     const selectBtn = document.getElementById('selectDirBtn');
     if (selectBtn) {
+        selectBtn.addEventListener('mousedown', (e) => {
+            createRipple(e, selectBtn);
+        });
         selectBtn.addEventListener('click', selectDataDirectory);
     }
 
     // 恢复默认按钮
     const resetBtn = document.getElementById('resetDirBtn');
     if (resetBtn) {
+        resetBtn.addEventListener('mousedown', (e) => {
+            createRipple(e, resetBtn);
+        });
         resetBtn.addEventListener('click', resetToDefaultDirectory);
     }
 
@@ -164,7 +170,7 @@ function bindEvents() {
     const closeBtn = document.getElementById('closeBtn');
     if (closeBtn) {
         closeBtn.addEventListener('mousedown', (e) => {
-            createRipple(closeBtn, e);
+            createRipple(e, closeBtn);
         });
 
         closeBtn.addEventListener('click', () => {
